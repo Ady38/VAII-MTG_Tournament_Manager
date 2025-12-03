@@ -1,7 +1,56 @@
 .navbar {
-    border-bottom: 1px solid grey;
+    border-bottom: 2px solid #D4AF37; /* Gold accent */
+    background: linear-gradient(90deg, #1E1E1E, #3A3A3A); /* Dark gradient */
+    color: #FFD700; /* Gold text for menu */
 }
 
 .navbar-brand img {
     width: 50px;
+    border: none; /* Removed border */
+    border-radius: 5px; /* Slight rounding for a polished look */
+}
+
+.navbar a {
+    color: #FFD700; /* Gold text for menu links */
+}
+
+.navbar a:hover {
+    color: #FFFFFF; /* White text on hover */
+}
+
+body {
+    background: #0D0D0D; /* Dark background */
+    color: #EAEAEA; /* Light text for readability */
+    font-family: 'Garamond', serif; /* Fantasy-style font */
+}
+
+a {
+    color: #1E90FF; /* Blue for links */
+    text-decoration: none;
+}
+
+a:hover {
+    color: #FFD700; /* Gold on hover */
+    text-decoration: underline;
+}
+
+button {
+    background: #8B0000; /* Deep red */
+    color: #FFFFFF; /* White text */
+    border: 2px solid #D4AF37; /* Gold border */
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #B22222; /* Lighter red on hover */
+}
+
+footer {
+    background: #1E1E1E; /* Dark footer */
+    color: #FFFFFF; /* White text */
+    border-top: 2px solid #D4AF37; /* Gold accent */
+    padding: 10px;
+    text-align: center;
 }
