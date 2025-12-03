@@ -32,6 +32,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="<?= $link->url('home.contact') ?>">Contact</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="<?= $link->url('Tournament.index') ?>">Tournaments</a>
+            </li>
         </ul>
         <?php if ($user->isLoggedIn()) { ?>
             <span class="navbar-text">Logged in user: <b><?= $user->getName() ?></b></span>
