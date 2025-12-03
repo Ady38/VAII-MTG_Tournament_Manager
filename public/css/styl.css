@@ -18,6 +18,14 @@
     color: #FFFFFF; /* White text on hover */
 }
 
+.navbar-text {
+    color: #FFD700; /* Gold text for readability */
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 5px;
+    text-shadow: 1px 1px 2px #000000; /* Subtle shadow for contrast */
+}
+
 body {
     background: #0D0D0D; /* Dark background */
     color: #EAEAEA; /* Light text for readability */
