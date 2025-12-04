@@ -57,11 +57,18 @@ class TournamentController extends BaseController
 
     public function edit(Request $request): Response
     {
-        $id = $request->get('id');
+        // Pri ulozeni z modalu ide ID v POST, pri klasickom otvoreni edit stranky v GET
+        if ($request->isPost()) {
+            $id = $request->post('id');
+        } else {
+            $id = $request->get('id');
+        }
+
         $tournament = Tournament::getOne($id);
         if (!$tournament) {
             return $this->redirect('?c=Tournament&a=index');
         }
+
         $result = $this->processTournamentForm($tournament, $request);
         if (!empty($result['redirect'])) {
             return $this->redirect('?c=Tournament&a=index');
