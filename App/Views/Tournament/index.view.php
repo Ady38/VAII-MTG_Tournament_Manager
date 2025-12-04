@@ -95,14 +95,14 @@
     </div>
 </div>
 
-<table style="width: 100%; border-collapse: collapse; font-family: 'Garamond', serif; background-color: #0D0D0D; color: #EAEAEA;">
+<table id="tournamentTable" style="width: 100%; border-collapse: collapse; font-family: 'Garamond', serif; background-color: #0D0D0D; color: #EAEAEA;">
     <thead>
         <tr style="background-color: #3A3A3A; color: #FFD700; text-align: center;">
-            <th style="border: 1px solid #D4AF37; padding: 8px;">Name</th>
-            <th style="border: 1px solid #D4AF37; padding: 8px;">Location</th>
-            <th style="border: 1px solid #D4AF37; padding: 8px;">Start Date</th>
-            <th style="border: 1px solid #D4AF37; padding: 8px;">End Date</th>
-            <th style="border: 1px solid #D4AF37; padding: 8px;">Status</th>
+            <th data-sort="text" style="border: 1px solid #D4AF37; padding: 8px; cursor:pointer;">Name</th>
+            <th data-sort="text" style="border: 1px solid #D4AF37; padding: 8px; cursor:pointer;">Location</th>
+            <th data-sort="date" style="border: 1px solid #D4AF37; padding: 8px; cursor:pointer;">Start Date</th>
+            <th data-sort="date" style="border: 1px solid #D4AF37; padding: 8px; cursor:pointer;">End Date</th>
+            <th data-sort="text" style="border: 1px solid #D4AF37; padding: 8px; cursor:pointer;">Status</th>
             <th style="border: 1px solid #D4AF37; padding: 8px;">Actions</th>
         </tr>
     </thead>
@@ -181,5 +181,48 @@
                 closeModal();
             }
         });
+
+        // Sorting logic
+        const table = document.getElementById('tournamentTable');
+        if (table) {
+            const headers = table.querySelectorAll('thead th[data-sort]');
+            const tbody = table.querySelector('tbody');
+            let sortState = {}; // columnIndex -> 'asc' | 'desc'
+
+            function compareValues(a, b, type, direction) {
+                if (type === 'date') {
+                    const da = a ? new Date(a) : null;
+                    const db = b ? new Date(b) : null;
+                    const va = da ? da.getTime() : 0;
+                    const vb = db ? db.getTime() : 0;
+                    return direction === 'asc' ? va - vb : vb - va;
+                } else { // text
+                    const va = (a || '').toString().toLowerCase();
+                    const vb = (b || '').toString().toLowerCase();
+                    if (va < vb) return direction === 'asc' ? -1 : 1;
+                    if (va > vb) return direction === 'asc' ? 1 : -1;
+                    return 0;
+                }
+            }
+
+            headers.forEach(function (header, index) {
+                header.addEventListener('click', function () {
+                    const type = header.getAttribute('data-sort') || 'text';
+                    const current = sortState[index] === 'asc' ? 'desc' : 'asc';
+                    sortState = {}; // reset other columns
+                    sortState[index] = current;
+
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    rows.sort(function (rowA, rowB) {
+                        const cellA = rowA.children[index].innerText.trim();
+                        const cellB = rowB.children[index].innerText.trim();
+                        return compareValues(cellA, cellB, type, current);
+                    });
+
+                    // Re-append sorted rows
+                    rows.forEach(function (row) { tbody.appendChild(row); });
+                });
+            });
+        }
     });
 </script>
