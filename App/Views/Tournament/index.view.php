@@ -4,6 +4,47 @@
 
 <h1 style="text-align: center; font-family: 'Garamond', serif; color: #FFD700;">Tournaments</h1>
 
+<!-- Centered filters form wrapper -->
+<div style="display:flex; justify-content:center; margin-bottom:15px;">
+    <!-- Filters form -->
+    <form method="get" action="" style="margin:0; font-family:'Garamond', serif; color:#EAEAEA; background:#111; padding:10px 15px; border:1px solid #D4AF37; border-radius:4px; max-width:900px; width:100%;">
+        <input type="hidden" name="c" value="Tournament">
+        <input type="hidden" name="a" value="index">
+        <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; justify-content:center;">
+            <div>
+                <label for="filter_name" style="display:block; margin-bottom:3px;">Name</label>
+                <input type="text" id="filter_name" name="name" value="<?= htmlspecialchars($filters['name'] ?? '', ENT_QUOTES) ?>"
+                       style="padding:4px; border:1px solid #D4AF37; background:#000; color:#EAEAEA;">
+            </div>
+            <div>
+                <label for="filter_location" style="display:block; margin-bottom:3px;">Location</label>
+                <input type="text" id="filter_location" name="location" value="<?= htmlspecialchars($filters['location'] ?? '', ENT_QUOTES) ?>"
+                       style="padding:4px; border:1px solid #D4AF37; background:#000; color:#EAEAEA;">
+            </div>
+            <div>
+                <label for="filter_date" style="display:block; margin-bottom:3px;">Date</label>
+                <input type="date" id="filter_date" name="date" value="<?= htmlspecialchars($filters['date'] ?? '', ENT_QUOTES) ?>"
+                       style="padding:4px; border:1px solid #D4AF37; background:#000; color:#EAEAEA; color-scheme: dark;">
+            </div>
+            <div>
+                <label for="filter_status" style="display:block; margin-bottom:3px;">Status</label>
+                <select id="filter_status" name="status"
+                        style="padding:4px; border:1px solid #D4AF37; background:#000; color:#EAEAEA; color-scheme: dark;">
+                    <?php $currentStatus = $filters['status'] ?? 'all'; ?>
+                    <option value="all" <?= $currentStatus === 'all' || $currentStatus === '' ? 'selected' : '' ?>>All</option>
+                    <option value="planned" <?= $currentStatus === 'planned' ? 'selected' : '' ?>>Planned</option>
+                    <option value="ongoing" <?= $currentStatus === 'ongoing' ? 'selected' : '' ?>>Ongoing</option>
+                    <option value="finished" <?= $currentStatus === 'finished' ? 'selected' : '' ?>>Finished</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:5px; align-items:center; margin-top:4px;">
+                <button type="submit" style="padding:6px 12px; background:#FFD700; border:1px solid #D4AF37; color:#000; font-weight:bold; cursor:pointer; border-radius:4px;">Filter</button>
+                <a href="?c=Tournament&a=index" style="padding:6px 12px; background:#333; border:1px solid #777; color:#EAEAEA; text-decoration:none; border-radius:4px;">Reset</a>
+            </div>
+        </div>
+    </form>
+</div>
+
 <!-- Simple centered modal -->
 <div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
     <div style="background:#111; border:1px solid #D4AF37; padding:20px; min-width:350px; color:#EAEAEA; font-family:'Garamond', serif; position:relative;">

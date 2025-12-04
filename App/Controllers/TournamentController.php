@@ -13,8 +13,68 @@ class TournamentController extends BaseController
 {
     public function index(Request $request): Response
     {
+        // Read filter parameters from query string
+        $name = trim((string)$request->get('name'));
+        $location = trim((string)$request->get('location'));
+        $status = trim((string)$request->get('status'));
+        $date = trim((string)$request->get('date'));
+
+        // Get all tournaments first
         $tournaments = Tournament::getAll();
-        return $this->html(['tournaments' => $tournaments]);
+
+        // Filter in PHP according to requested criteria
+        $filtered = array_filter($tournaments, function (Tournament $tournament) use ($name, $location, $status, $date) {
+            // Filter by name (case-insensitive substring)
+            if ($name !== '' && stripos($tournament->name, $name) === false) {
+                return false;
+            }
+
+            // Filter by location (case-insensitive substring)
+            if ($location !== '' && stripos((string)$tournament->location, $location) === false) {
+                return false;
+            }
+
+            // Filter by status (exact match)
+            if ($status !== '' && $status !== 'all' && $tournament->status !== $status) {
+                return false;
+            }
+
+            // Filter by date in range [start_date, end_date]
+            if ($date !== '') {
+                $d = substr($date, 0, 10);
+                $start = $tournament->start_date ? substr($tournament->start_date, 0, 10) : null;
+                $end = $tournament->end_date ? substr($tournament->end_date, 0, 10) : null;
+
+                if ($start && $end) {
+                    if ($d < $start || $d > $end) {
+                        return false;
+                    }
+                } elseif ($start) {
+                    if ($d < $start) {
+                        return false;
+                    }
+                } elseif ($end) {
+                    if ($d > $end) {
+                        return false;
+                    }
+                } else {
+                    // No dates on tournament, can't match date filter
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        return $this->html([
+            'tournaments' => array_values($filtered),
+            'filters' => [
+                'name' => $name,
+                'location' => $location,
+                'status' => $status,
+                'date' => $date,
+            ],
+        ]);
     }
 
     private function processTournamentForm(Tournament $tournament, Request $request): array
