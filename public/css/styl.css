@@ -61,3 +61,17 @@ footer {
     padding: 10px;
     text-align: center;
 }
+
+/* Subtitle used on home page — ensure strong contrast on dark background */
+.subtitle {
+    color: #F5F5F5 !important; /* near-white for maximum readability */
+    opacity: 0.95;
+    font-weight: 500;
+}
+
+/* Footer specific readable text for dark theme */
+.footer-text {
+    color: #F0F0F0 !important;
+    font-size: 0.95rem;
+    opacity: 0.95;
+}
