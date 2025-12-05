@@ -21,11 +21,6 @@ if (!empty($_SESSION['add_errors'])) {
 
 <h1 class="tournaments-title">Tournaments</h1>
 
-<!-- Create Tournament Button outside filters -->
-<div class="tournament-actions" style="margin-bottom: 1.5em;">
-    <button id="openAddModal" class="filters-button" type="button" title="Add tournament">Create tournament</button>
-</div>
-
 <!-- Centered filters form wrapper -->
 <div class="filters-wrapper">
     <!-- Filters form -->
@@ -64,8 +59,12 @@ if (!empty($_SESSION['add_errors'])) {
             </div>
         </div>
     </form>
+    <?php if ($user->isLoggedIn()): ?>
+        <button id="openAddModal" class="filters-button tournament-create-btn" type="button" title="Add tournament">Create tournament</button>
+    <?php endif; ?>
 </div>
 
+<?php if ($user->isLoggedIn()): ?>
 <!-- Add Tournament Modal -->
 <div id="addModal" class="edit-modal-overlay">
     <div class="edit-modal-content">
@@ -155,6 +154,7 @@ if (!empty($_SESSION['add_errors'])) {
         </form>
     </div>
 </div>
+<?php endif; ?>
 
 <table id="tournamentTable" class="tournament-table">
     <thead>
@@ -176,22 +176,37 @@ if (!empty($_SESSION['add_errors'])) {
                 <td><?= htmlspecialchars($tournament->end_date) ?></td>
                 <td><?= htmlspecialchars($tournament->status) ?></td>
                 <td>
-                    <a href="#" class="edit-link tournament-action-edit"
-                       data-id="<?= $tournament->tournament_id ?>"
-                       data-name="<?= htmlspecialchars($tournament->name, ENT_QUOTES) ?>"
-                       data-location="<?= htmlspecialchars($tournament->location, ENT_QUOTES) ?>"
-                       data-start_date="<?= htmlspecialchars($tournament->start_date, ENT_QUOTES) ?>"
-                       data-end_date="<?= htmlspecialchars($tournament->end_date, ENT_QUOTES) ?>"
-                       data-status="<?= htmlspecialchars($tournament->status, ENT_QUOTES) ?>">
-                        Edit
-                    </a>
-                    <span class="tournament-action-separator">|</span>
-                    <a href="?c=Tournament&a=delete&id=<?= $tournament->tournament_id ?>" class="tournament-action-delete" onclick="return confirm('Are you sure?')">Delete</a>
+                    <?php if ($user->isLoggedIn()): ?>
+                        <a href="#" class="edit-link tournament-action-edit"
+                           data-id="<?= $tournament->tournament_id ?>"
+                           data-name="<?= htmlspecialchars($tournament->name, ENT_QUOTES) ?>"
+                           data-location="<?= htmlspecialchars($tournament->location, ENT_QUOTES) ?>"
+                           data-start_date="<?= htmlspecialchars($tournament->start_date, ENT_QUOTES) ?>"
+                           data-end_date="<?= htmlspecialchars($tournament->end_date, ENT_QUOTES) ?>"
+                           data-status="<?= htmlspecialchars($tournament->status, ENT_QUOTES) ?>">
+                            Edit
+                        </a>
+                        <span class="tournament-action-separator">|</span>
+                        <a href="?c=Tournament&a=delete&id=<?= $tournament->tournament_id ?>" class="tournament-action-delete" onclick="return confirm('Are you sure?')">Delete</a>
+                        <span class="tournament-action-separator">|</span>
+                    <?php endif; ?>
+                    <a href="?c=Tournament&a=detail&id=<?= $tournament->tournament_id ?>" class="tournament-action-detail">Detail</a>
                 </td>
             </tr>
         <?php endforeach; ?>
     </tbody>
 </table>
+
+<style>
+.tournament-create-btn {
+    font-size: 0.9em;
+    padding: 0.3em 0.8em;
+    margin-top: 0.5em;
+    margin-left: 0.5em;
+    margin-bottom: 0.5em;
+    border-radius: 6px;
+}
+</style>
 
 <script src="/js/tournaments.js"></script>
 <script src="/js/tournament_sort.js"></script>

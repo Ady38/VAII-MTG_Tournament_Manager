@@ -166,4 +166,14 @@ class TournamentController extends BaseController
         }
         return $this->redirect('?c=Tournament&a=index');
     }
+
+    public function detail(Request $request): Response
+    {
+        $id = $request->get('id');
+        $tournament = Tournament::getOne($id);
+        if (!$tournament) {
+            return $this->redirect('?c=Tournament&a=index');
+        }
+        return $this->html(['tournament' => $tournament], 'detail');
+    }
 }

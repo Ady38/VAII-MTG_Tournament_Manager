@@ -31,9 +31,6 @@
         </a>
         <ul class="navbar-nav me-auto">
             <li class="nav-item">
-                <a class="nav-link" href="<?= $link->url('home.contact') ?>">Contact</a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link" href="<?= $link->url('Tournament.index') ?>">Tournaments</a>
             </li>
         </ul>
