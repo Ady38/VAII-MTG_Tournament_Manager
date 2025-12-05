@@ -17,6 +17,14 @@ if (!empty($_SESSION['add_errors'])) {
     echo '<script>window.addModalErrors = ' . json_encode(array_map('htmlspecialchars', $_SESSION['add_errors'])) . ';</script>';
     unset($_SESSION['add_errors']);
 }
+
+// Helper to format datetime for datetime-local input
+function format_datetime_local($dt) {
+    if (!$dt) return '';
+    $t = strtotime($dt);
+    if (!$t) return '';
+    return date('Y-m-d\TH:i', $t);
+}
 ?>
 
 <h1 class="tournaments-title">Tournaments</h1>
@@ -81,12 +89,12 @@ if (!empty($_SESSION['add_errors'])) {
             </div>
             <div class="edit-modal-row">
                 <div>
-                    <label for="add_start_date" class="edit-modal-label">Start date</label>
-                    <input type="date" name="start_date" id="add_start_date" class="edit-modal-input edit-modal-input-date" required value="<?= htmlspecialchars($addFormData['start_date']) ?>">
+                    <label for="add_start_date" class="edit-modal-label">Start date & time</label>
+                    <input type="datetime-local" name="start_date" id="add_start_date" class="edit-modal-input edit-modal-input-date" required value="<?= format_datetime_local($addFormData['start_date']) ?>">
                 </div>
                 <div>
-                    <label for="add_end_date" class="edit-modal-label">End date</label>
-                    <input type="date" name="end_date" id="add_end_date" class="edit-modal-input edit-modal-input-date" required value="<?= htmlspecialchars($addFormData['end_date']) ?>">
+                    <label for="add_end_date" class="edit-modal-label">End date & time</label>
+                    <input type="datetime-local" name="end_date" id="add_end_date" class="edit-modal-input edit-modal-input-date" required value="<?= format_datetime_local($addFormData['end_date']) ?>">
                 </div>
             </div>
             <div class="edit-modal-field">
@@ -129,12 +137,12 @@ if (!empty($_SESSION['add_errors'])) {
 
             <div class="edit-modal-row">
                 <div>
-                    <label for="edit_start_date" class="edit-modal-label">Start date</label>
-                    <input type="date" name="start_date" id="edit_start_date" class="edit-modal-input edit-modal-input-date">
+                    <label for="edit_start_date" class="edit-modal-label">Start date & time</label>
+                    <input type="datetime-local" name="start_date" id="edit_start_date" class="edit-modal-input edit-modal-input-date">
                 </div>
                 <div>
-                    <label for="edit_end_date" class="edit-modal-label">End date</label>
-                    <input type="date" name="end_date" id="edit_end_date" class="edit-modal-input edit-modal-input-date">
+                    <label for="edit_end_date" class="edit-modal-label">End date & time</label>
+                    <input type="datetime-local" name="end_date" id="edit_end_date" class="edit-modal-input edit-modal-input-date">
                 </div>
             </div>
 
@@ -181,8 +189,8 @@ if (!empty($_SESSION['add_errors'])) {
                            data-id="<?= $tournament->tournament_id ?>"
                            data-name="<?= htmlspecialchars($tournament->name, ENT_QUOTES) ?>"
                            data-location="<?= htmlspecialchars($tournament->location, ENT_QUOTES) ?>"
-                           data-start_date="<?= htmlspecialchars($tournament->start_date, ENT_QUOTES) ?>"
-                           data-end_date="<?= htmlspecialchars($tournament->end_date, ENT_QUOTES) ?>"
+                           data-start_date="<?= htmlspecialchars(format_datetime_local($tournament->start_date), ENT_QUOTES) ?>"
+                           data-end_date="<?= htmlspecialchars(format_datetime_local($tournament->end_date), ENT_QUOTES) ?>"
                            data-status="<?= htmlspecialchars($tournament->status, ENT_QUOTES) ?>">
                             Edit
                         </a>

@@ -34,8 +34,8 @@ CREATE TABLE tournament (
                             tournament_id  INT AUTO_INCREMENT PRIMARY KEY,
                             name           VARCHAR(150) NOT NULL,
                             location       VARCHAR(150),
-                            start_date     DATE,
-                            end_date       DATE,
+                            start_date     DATETIME,
+                            end_date       DATETIME,
                             status         VARCHAR(50) DEFAULT 'planned',
                             organizer_id   INT NOT NULL,
                             CONSTRAINT fk_tournament_organizer FOREIGN KEY (organizer_id)

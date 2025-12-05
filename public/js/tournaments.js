@@ -35,8 +35,11 @@ document.addEventListener('DOMContentLoaded', function () {
             idInput.value = this.getAttribute('data-id') || '';
             nameInput.value = this.getAttribute('data-name') || '';
             locationInput.value = this.getAttribute('data-location') || '';
-            startDateInput.value = (this.getAttribute('data-start_date') || '').substring(0, 10);
-            endDateInput.value = (this.getAttribute('data-end_date') || '').substring(0, 10);
+            let startRaw = this.getAttribute('data-start_date') || '';
+            let endRaw = this.getAttribute('data-end_date') || '';
+            console.debug('Edit modal raw datetimes:', { startRaw, endRaw });
+            startDateInput.value = startRaw;
+            endDateInput.value = endRaw;
             statusSelect.value = this.getAttribute('data-status') || 'planned';
 
             openModal();
