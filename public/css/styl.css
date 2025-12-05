@@ -42,8 +42,8 @@ a:hover {
 }
 
 button {
-    background: #8B0000; /* Deep red */
-    color: #FFFFFF; /* White text */
+    background: #FFD700;
+    color: #000;
     border: 2px solid #D4AF37; /* Gold border */
     border-radius: 5px;
     padding: 10px 20px;
@@ -51,7 +51,8 @@ button {
 }
 
 button:hover {
-    background: #B22222; /* Lighter red on hover */
+    background: #000;
+    color: #FFD700;
 }
 
 footer {
@@ -74,4 +75,68 @@ footer {
     color: #F0F0F0 !important;
     font-size: 0.95rem;
     opacity: 0.95;
+}
+
+/* Home page specific styles extracted from inline styles */
+.home-logo {
+    max-width: 220px;
+}
+
+.home-next-tournament-wrapper {
+    max-width: 500px;
+}
+
+.home-next-tournament-card {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #d4af37;
+    border-radius: 18px;
+}
+
+.home-next-tournament-title {
+    color: #d4af37;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.home-next-tournament-title a {
+    text-decoration: none;
+    color: #d4af37;
+}
+
+.home-next-tournament-location,
+.home-next-tournament-date {
+    color: #ffffff;
+    font-size: 1.15em;
+}
+
+.home-next-tournament-btn {
+    border-radius: 8px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    background-color: #d4af37;
+    border-color: #d4af37;
+    color: #000;
+}
+
+.home-no-tournament-card {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #d4af37;
+    border-radius: 18px;
+    color: #ffffff;
+}
+
+.home-no-tournament-card h5 {
+    color: #d4af37;
+}
+
+.home-primary-btn {
+    background-color: #d4af37;
+    border-color: #d4af37;
+    color: #000;
+}
+
+.home-quickstart-list {
+    display: inline-block;
+    text-align: left;
+    max-width: 600px;
 }
