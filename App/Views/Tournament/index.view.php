@@ -1,6 +1,30 @@
-<?php /** @var array $tournaments */ ?>
+<?php
+/** @var array $tournaments */
+
+$addFormData = [
+    'name' => '',
+    'location' => '',
+    'start_date' => '',
+    'end_date' => '',
+    'status' => 'planned',
+];
+if (!empty($_SESSION['add_form_data'])) {
+    $addFormData = array_merge($addFormData, $_SESSION['add_form_data']);
+    unset($_SESSION['add_form_data']);
+}
+
+if (!empty($_SESSION['add_errors'])) {
+    echo '<script>window.addModalErrors = ' . json_encode(array_map('htmlspecialchars', $_SESSION['add_errors'])) . ';</script>';
+    unset($_SESSION['add_errors']);
+}
+?>
 
 <h1 class="tournaments-title">Tournaments</h1>
+
+<!-- Create Tournament Button outside filters -->
+<div class="tournament-actions" style="margin-bottom: 1.5em;">
+    <button id="openAddModal" class="filters-button" type="button" title="Add tournament">Create tournament</button>
+</div>
 
 <!-- Centered filters form wrapper -->
 <div class="filters-wrapper">
@@ -40,6 +64,46 @@
             </div>
         </div>
     </form>
+</div>
+
+<!-- Add Tournament Modal -->
+<div id="addModal" class="edit-modal-overlay">
+    <div class="edit-modal-content">
+        <button type="button" id="closeAddModal" class="edit-modal-close">&times;</button>
+        <h2 class="edit-modal-title">Add tournament</h2>
+        <form id="addTournamentForm" method="post" action="?c=Tournament&a=add">
+            <div class="edit-modal-field">
+                <label for="add_name" class="edit-modal-label">Name</label>
+                <input type="text" name="name" id="add_name" class="edit-modal-input" required value="<?= htmlspecialchars($addFormData['name']) ?>">
+            </div>
+            <div class="edit-modal-field">
+                <label for="add_location" class="edit-modal-label">Location</label>
+                <input type="text" name="location" id="add_location" class="edit-modal-input" required value="<?= htmlspecialchars($addFormData['location']) ?>">
+            </div>
+            <div class="edit-modal-row">
+                <div>
+                    <label for="add_start_date" class="edit-modal-label">Start date</label>
+                    <input type="date" name="start_date" id="add_start_date" class="edit-modal-input edit-modal-input-date" required value="<?= htmlspecialchars($addFormData['start_date']) ?>">
+                </div>
+                <div>
+                    <label for="add_end_date" class="edit-modal-label">End date</label>
+                    <input type="date" name="end_date" id="add_end_date" class="edit-modal-input edit-modal-input-date" required value="<?= htmlspecialchars($addFormData['end_date']) ?>">
+                </div>
+            </div>
+            <div class="edit-modal-field">
+                <label for="add_status" class="edit-modal-label">Status</label>
+                <select name="status" id="add_status" class="edit-modal-select" required>
+                    <option value="planned" <?= $addFormData['status'] === 'planned' ? 'selected' : '' ?>>Planned</option>
+                    <option value="ongoing" <?= $addFormData['status'] === 'ongoing' ? 'selected' : '' ?>>Ongoing</option>
+                    <option value="finished" <?= $addFormData['status'] === 'finished' ? 'selected' : '' ?>>Finished</option>
+                </select>
+            </div>
+            <div class="edit-modal-actions">
+                <button type="button" id="cancelAdd" class="edit-modal-cancel">Cancel</button>
+                <button type="submit" class="edit-modal-save">Add</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Simple centered modal -->
@@ -130,3 +194,5 @@
 </table>
 
 <script src="/js/tournaments.js"></script>
+<script src="/js/tournament_sort.js"></script>
+<script src="/js/tournament_add_modal.js"></script>

@@ -87,6 +87,9 @@ class TournamentController extends BaseController
             $tournament->end_date = $request->post('end_date');
             $tournament->status = trim($request->post('status'));
 
+            // Bude treba nahradit skutecnym organizatorom z prihlaseneho uzivatela
+            $tournament->organizer_id = 1;
+
             if (!$tournament->name) {
                 $errors[] = 'Name is required.';
             }
@@ -95,6 +98,12 @@ class TournamentController extends BaseController
             }
             if (!$tournament->end_date) {
                 $errors[] = 'End date is required.';
+            }
+            // Kontrola: End date musí byť rovnaký alebo neskorší ako start date
+            if ($tournament->start_date && $tournament->end_date) {
+                if ($tournament->end_date < $tournament->start_date) {
+                    $errors[] = 'End date must be the same as or later than start date.';
+                }
             }
 
             if (empty($errors)) {
@@ -112,7 +121,19 @@ class TournamentController extends BaseController
         if (!empty($result['redirect'])) {
             return $this->redirect('?c=Tournament&a=index');
         }
-        return $this->html(['errors' => $result['errors'], 'tournament' => $result['tournament']], 'add');
+        // Ak sú chyby, zobraz ich cez alert v index.view.php cez session a presmeruj späť na index
+        if (!empty($result['errors'])) {
+            $_SESSION['add_errors'] = $result['errors'];
+            // Uloz POST data pre predvyplnenie
+            $_SESSION['add_form_data'] = [
+                'name' => $request->post('name'),
+                'location' => $request->post('location'),
+                'start_date' => $request->post('start_date'),
+                'end_date' => $request->post('end_date'),
+                'status' => $request->post('status'),
+            ];
+        }
+        return $this->redirect('?c=Tournament&a=index');
     }
 
     public function edit(Request $request): Response
