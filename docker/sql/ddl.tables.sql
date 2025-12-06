@@ -107,3 +107,4 @@ CREATE INDEX idx_deck_user ON decklist(user_id);
 CREATE INDEX idx_deck_tournament ON decklist(tournament_id);
 
 
+

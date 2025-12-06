@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Configuration;
+use App\Models\User;
 use Exception;
 use Framework\Core\BaseController;
 use Framework\Http\Request;
@@ -47,9 +48,13 @@ class AuthController extends BaseController
     {
         $logged = null;
         if ($request->hasValue('submit')) {
-            $logged = $this->app->getAuthenticator()->login($request->value('username'), $request->value('password'));
-            if ($logged) {
+            $user = User::authenticate($request->value('username'), $request->value('password'));
+            if ($user) {
+                // Store identity object in session for framework
+                $this->app->getSession()->set(\App\Configuration::IDENTITY_SESSION_KEY, $user);
                 return $this->redirect($this->url("admin.index"));
+            } else {
+                $logged = false;
             }
         }
 
