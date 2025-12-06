@@ -3,6 +3,8 @@
 /** @var \Framework\Auth\AppUser $user */
 /** @var \Framework\Support\LinkGenerator $link */
 
+require_once __DIR__ . '/_helpers.php';
+
 $addFormData = [
     'name' => '',
     'location' => '',
@@ -16,16 +18,10 @@ if (!empty($_SESSION['add_form_data'])) {
 }
 
 if (!empty($_SESSION['add_errors'])) {
-    echo '<script>window.addModalErrors = ' . json_encode(array_map('htmlspecialchars', $_SESSION['add_errors'])) . ';</script>';
+    echo '<script>window.addModalErrors = ' .
+        json_encode(array_map('htmlspecialchars', $_SESSION['add_errors'])) .
+        ';</script>';
     unset($_SESSION['add_errors']);
-}
-
-// Helper to format datetime for datetime-local input
-function format_datetime_local($dt) {
-    if (!$dt) return '';
-    $t = strtotime($dt);
-    if (!$t) return '';
-    return date('Y-m-d\\TH:i', $t);
 }
 ?>
 
@@ -41,17 +37,17 @@ function format_datetime_local($dt) {
             <div>
                 <label for="filter_name" class="filters-label">Name</label>
                 <input type="text" id="filter_name" name="name" value="<?= htmlspecialchars($filters['name'] ?? '', ENT_QUOTES) ?>"
-                       class="filters-input">
+                    class="filters-input">
             </div>
             <div>
                 <label for="filter_location" class="filters-label">Location</label>
                 <input type="text" id="filter_location" name="location" value="<?= htmlspecialchars($filters['location'] ?? '', ENT_QUOTES) ?>"
-                       class="filters-input">
+                    class="filters-input">
             </div>
             <div>
                 <label for="filter_date" class="filters-label">Date</label>
                 <input type="date" id="filter_date" name="date" value="<?= htmlspecialchars($filters['date'] ?? '', ENT_QUOTES) ?>"
-                       class="filters-input filters-select">
+                    class="filters-input filters-select">
             </div>
             <div>
                 <label for="filter_status" class="filters-label">Status</label>
@@ -83,20 +79,26 @@ function format_datetime_local($dt) {
         <form id="addTournamentForm" method="post" action="<?= $link->url('Tournament.add') ?>">
             <div class="edit-modal-field">
                 <label for="add_name" class="edit-modal-label">Name</label>
-                <input type="text" name="name" id="add_name" class="edit-modal-input" required value="<?= htmlspecialchars($addFormData['name']) ?>">
+                <input type="text" name="name" id="add_name" class="edit-modal-input" required
+                    value="<?= htmlspecialchars($addFormData['name']) ?>">
             </div>
             <div class="edit-modal-field">
                 <label for="add_location" class="edit-modal-label">Location</label>
-                <input type="text" name="location" id="add_location" class="edit-modal-input" required value="<?= htmlspecialchars($addFormData['location']) ?>">
+                <input type="text" name="location" id="add_location" class="edit-modal-input" required
+                    value="<?= htmlspecialchars($addFormData['location']) ?>">
             </div>
             <div class="edit-modal-row">
                 <div>
                     <label for="add_start_date" class="edit-modal-label">Start date &amp; time</label>
-                    <input type="datetime-local" name="start_date" id="add_start_date" class="edit-modal-input edit-modal-input-date" required value="<?= format_datetime_local($addFormData['start_date']) ?>">
+                    <input type="datetime-local" name="start_date" id="add_start_date"
+                        class="edit-modal-input edit-modal-input-date" required
+                        value="<?= format_datetime_local($addFormData['start_date']) ?>">
                 </div>
                 <div>
                     <label for="add_end_date" class="edit-modal-label">End date &amp; time</label>
-                    <input type="datetime-local" name="end_date" id="add_end_date" class="edit-modal-input edit-modal-input-date" required value="<?= format_datetime_local($addFormData['end_date']) ?>">
+                    <input type="datetime-local" name="end_date" id="add_end_date"
+                        class="edit-modal-input edit-modal-input-date" required
+                        value="<?= format_datetime_local($addFormData['end_date']) ?>">
                 </div>
             </div>
             <div class="edit-modal-field">
@@ -136,11 +138,13 @@ function format_datetime_local($dt) {
             <div class="edit-modal-row">
                 <div>
                     <label for="edit_start_date" class="edit-modal-label">Start date &amp; time</label>
-                    <input type="datetime-local" name="start_date" id="edit_start_date" class="edit-modal-input edit-modal-input-date">
+                    <input type="datetime-local" name="start_date" id="edit_start_date"
+                        class="edit-modal-input edit-modal-input-date">
                 </div>
                 <div>
                     <label for="edit_end_date" class="edit-modal-label">End date &amp; time</label>
-                    <input type="datetime-local" name="end_date" id="edit_end_date" class="edit-modal-input edit-modal-input-date">
+                    <input type="datetime-local" name="end_date" id="edit_end_date"
+                        class="edit-modal-input edit-modal-input-date">
                 </div>
             </div>
 
@@ -193,10 +197,15 @@ function format_datetime_local($dt) {
                             Edit
                         </a>
                         <span class="tournament-action-separator">|</span>
-                        <a href="<?= $link->url('Tournament.delete', ['id' => $tournament->tournament_id]) ?>" class="tournament-action-delete" onclick="return confirm('Are you sure?')">Delete</a>
+                        <a href="<?= $link->url('Tournament.delete', ['id' => $tournament->tournament_id]) ?>"
+                           class="tournament-action-delete"
+                           onclick="return confirm('Are you sure?')">
+                            Delete
+                        </a>
                         <span class="tournament-action-separator">|</span>
                     <?php endif; ?>
-                    <a href="<?= $link->url('Tournament.detail', ['id' => $tournament->tournament_id]) ?>" class="tournament-action-detail">Detail</a>
+                    <a href="<?= $link->url('Tournament.detail', ['id' => $tournament->tournament_id]) ?>"
+                       class="tournament-action-detail">Detail</a>
                 </td>
             </tr>
         <?php endforeach; ?>
