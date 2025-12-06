@@ -5,7 +5,7 @@
 /** @var \Framework\Support\LinkGenerator $link */
 ?>
 <!DOCTYPE html>
-<html lang="sk">
+<html lang="en">
 <head>
     <title><?= App\Configuration::APP_NAME ?></title>
     <!-- Favicons -->

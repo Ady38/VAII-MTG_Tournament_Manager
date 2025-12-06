@@ -46,16 +46,16 @@
             <form method="post" action="?c=Tournament&a=<?= $isRegistered ? 'leave' : 'join' ?>">
                 <input type="hidden" name="tournament_id" value="<?= htmlspecialchars($tournament->tournament_id) ?>">
                 <button type="submit" class="btn btn-primary btn-lg home-primary-btn mt-2">
-                    <?= $isRegistered ? 'Odhlásiť sa z turnaja' : 'Prihlásiť sa na turnaj' ?>
+                    <?= $isRegistered ? 'Unregister from tournament' : 'Register for tournament' ?>
                 </button>
             </form>
         <?php else: ?>
-            <p>Pre prihlásenie na turnaj sa prosím <a href="?c=Auth&a=login">prihláste</a>.</p>
+            <p>Please <a href="?c=Auth&a=login">log in</a> to register for this tournament.</p>
         <?php endif; ?>
     </div>
     <?php if ($showAllTabs): ?>
         <div class="tournament-tab-content" id="tab-pairings" style="display:none">
-            <p>Tu bude párovanie hráčov/zápasov.</p>
+            <p>Player/match pairings will be displayed here.</p>
         </div>
         <div class="tournament-tab-content" id="tab-standings" style="display:none">
             <?php if (!empty($rankings)): ?>
@@ -63,9 +63,9 @@
                     <thead>
                     <tr>
                         <th>#</th>
-                        <th>Hráč</th>
-                        <th>Body</th>
-                        <th>Pozícia</th>
+                        <th>Player</th>
+                        <th>Points</th>
+                        <th>Rank</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -80,7 +80,7 @@
                     </tbody>
                 </table>
             <?php else: ?>
-                <p>Ešte nie sú k dispozícii žiadne výsledky tohto turnaja.</p>
+                <p>No standings are available for this tournament yet.</p>
             <?php endif; ?>
         </div>
     <?php endif; ?>
