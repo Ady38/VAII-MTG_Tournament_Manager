@@ -3,6 +3,7 @@
 /** @var bool $isRegistered */
 /** @var bool $isLogged */
 /** @var array $rankings */
+
 ?>
 <h1>Tournament Detail</h1>
 

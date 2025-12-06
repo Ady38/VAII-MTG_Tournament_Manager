@@ -1,4 +1,5 @@
 <?php
+
 // Helper to format datetime for datetime-local input
 function format_datetime_local($dt)
 {
@@ -11,4 +12,3 @@ function format_datetime_local($dt)
     }
     return date('Y-m-d\TH:i', $t);
 }
-
