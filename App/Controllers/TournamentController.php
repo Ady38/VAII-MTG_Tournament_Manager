@@ -24,7 +24,8 @@ class TournamentController extends BaseController
         $tournaments = Tournament::getAll();
 
         // Filter in PHP according to requested criteria
-        $filtered = array_filter($tournaments, function (Tournament $tournament) use ($name, $location, $status, $date) {
+        $filtered = array_filter($tournaments, function (Tournament $tournament)
+        use ($name, $location, $status, $date) {
             // Filter by name (case-insensitive substring)
             if ($name !== '' && stripos($tournament->name, $name) === false) {
                 return false;

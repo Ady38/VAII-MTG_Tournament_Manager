@@ -81,7 +81,7 @@
                     <?php endforeach; ?>
                     </tbody>
                 </table>
-            <?php else: ?>
+            <?php else : ?>
                 <p>No standings are available for this tournament yet.</p>
             <?php endif; ?>
         </div>

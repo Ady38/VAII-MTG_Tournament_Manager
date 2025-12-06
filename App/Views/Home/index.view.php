@@ -33,7 +33,7 @@
                             </a>
                         </div>
                     </div>
-                <?php else: ?>
+                <?php else : ?>
                     <div class="mx-auto mt-5 home-next-tournament-wrapper">
                         <div class="text-center py-4 px-3 home-no-tournament-card">
                             <h5 class="mb-0">No upcoming tournaments.</h5>
@@ -42,8 +42,10 @@
                 <?php endif; ?>
 
                 <div class="mt-4">
-                    <a class="btn btn-primary btn-lg me-2 home-primary-btn" href="<?= $link->url('Tournament.index') ?>">View Tournaments</a>
-                    <a class="btn btn-outline-secondary btn-lg home-primary-btn" href="<?= $link->url('Auth.login') ?>">Admin Login</a>
+                    <a class="btn btn-primary btn-lg me-2 home-primary-btn"
+                       href="<?= $link->url('Tournament.index') ?>">View Tournaments</a>
+                    <a class="btn btn-outline-secondary btn-lg home-primary-btn"
+                       href="<?= $link->url('Auth.login') ?>">Admin Login</a>
                 </div>
             </div>
         </div>
@@ -52,11 +54,13 @@
     <div class="row mt-5">
         <div class="col-md-4 text-center">
             <h5>Manage Events</h5>
-            <p>Create Swiss, Draft or Commander tournaments, set rounds, dates and locations, and manage player lists.</p>
+            <p>Create Swiss, Draft or Commander tournaments,
+                set rounds, dates and locations, and manage player lists.</p>
         </div>
         <div class="col-md-4 text-center">
             <h5>Pairings & Standings</h5>
-            <p>Automatic pairing generation, calculate match points, tie-breakers and display live standings during events.</p>
+            <p>Automatic pairing generation, calculate match points,
+                tie-breakers and display live standings during events.</p>
         </div>
         <div class="col-md-4 text-center">
             <h5>Reporting</h5>
