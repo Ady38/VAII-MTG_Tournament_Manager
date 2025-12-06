@@ -394,12 +394,40 @@ footer {
     color: #fff;
 }
 
+/* Ensure muted/helper text inside the dark tournament tabs is readable */
+.tournament-tabs-frame .text-muted {
+    /* make the helper text stand out on dark background: use bright gold */
+    color: #FFD700 !important;
+    font-weight: 700 !important;
+    opacity: 1 !important;
+}
+
+/* Links inside the tabs should be visible against the dark background (use theme gold) */
+.tournament-tabs-frame a:link,
+.tournament-tabs-frame a:visited {
+    color: #FFD700 !important;
+}
+.tournament-tabs-frame a:hover,
+.tournament-tabs-frame a:active {
+    color: #FFF2B8 !important;
+}
+
 .tournament-tabs-frame .tournament-tab-content {
     border: none;
     background: transparent;
     padding: 0;
     margin: 0;
 }
+
+/* Commander text hint: only the inner link is interactive */
+.commander-link {
+    cursor: pointer;
+    text-decoration: underline dotted;
+    /* ensure visible on dark background: use light/gold color */
+    color: #EAEAEA; /* default light text */
+}
+.commander-link:visited { color: #EAEAEA; }
+.commander-link:hover { color: #FFD700; }
 
 .tournament-create-btn {
     font-size: 0.9em;

@@ -14,10 +14,10 @@
     <link rel="icon" type="image/png" sizes="16x16" href="<?= $link->asset('favicons/favicon-16x16.png') ?>">
     <link rel="manifest" href="<?= $link->asset('favicons/site.webmanifest') ?>">
     <link rel="shortcut icon" href="<?= $link->asset('favicons/favicon.ico') ?>">
-    <link rel="stylesheet" href="<?= $link->asset('css/bootstrap.min.css') ?>">
-    <script src="<?= $link->asset('js/bootstrap.bundle.min.js') ?>"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="<?= $link->asset('css/styl.css') ?>">
-    <?php // tournament.css merged into styl.css ?>
     <script src="<?= $link->asset('js/script.js') ?>"></script>
     <script src="<?= $link->asset('js/tournament_sort.js') ?>"></script>
     <script src="<?= $link->asset('js/tournament_add_modal.js') ?>"></script>
@@ -28,8 +28,7 @@
 <nav class="navbar navbar-expand-sm bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="<?= $link->url('home.index') ?>">
-            <img src=
-                 "<?= $link->asset('images/logo_empty.png') ?>" title="<?= App\Configuration::APP_NAME ?>" alt="Framework Logo">
+            <img src="<?= $link->asset('images/logo_empty.png') ?>" title="<?= App\Configuration::APP_NAME ?>" alt="Framework Logo">
         </a>
         <ul class="navbar-nav me-auto">
             <li class="nav-item">
