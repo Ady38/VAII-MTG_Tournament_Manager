@@ -213,3 +213,29 @@
     color: #FF0000;
     text-decoration: none;
 }
+
+.tournament-tabs-frame {
+    background: rgba(0,0,0,0.7);
+    border: 1px solid #d4af37;
+    border-radius: 0 0 12px 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+    color: #fff;
+}
+
+/* Keep inner tab contents simple; outer frame provides the main border */
+.tournament-tabs-frame .tournament-tab-content {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.tournament-create-btn {
+    font-size: 0.9em;
+    padding: 0.3em 0.8em;
+    margin-top: 0.5em;
+    margin-left: 0.5em;
+    margin-bottom: 0.5em;
+    border-radius: 6px;
+}

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use Framework\Core\BaseController;
 use App\Models\Tournament;
+use App\Models\TournamentPlayer;
 use Framework\Http\Request;
 use Framework\Http\Responses\Response;
 use Framework\Http\Responses\ViewResponse;
@@ -174,6 +175,65 @@ class TournamentController extends BaseController
         if (!$tournament) {
             return $this->redirect('?c=Tournament&a=index');
         }
-        return $this->html(['tournament' => $tournament], 'detail');
+
+        $identity = $this->user->getIdentity();
+        $isRegistered = false;
+        if ($identity) {
+            $registrations = TournamentPlayer::getAll(
+                "tournament_id = ? AND user_id = ?",
+                [$tournament->tournament_id, $identity->user_id]
+            );
+            $isRegistered = !empty($registrations);
+        }
+
+        $isLogged = $this->user->isLoggedIn();
+
+        return $this->html([
+            'tournament' => $tournament,
+            'isRegistered' => $isRegistered,
+            'isLogged' => $isLogged,
+        ], 'detail');
+    }
+
+    public function join(Request $request): Response
+    {
+        $user = $this->user->getIdentity();
+        if (!$user) {
+            return $this->redirect('?c=Auth&a=login');
+        }
+
+        $tournamentId = (int)$request->post('tournament_id');
+        $tournament = Tournament::getOne($tournamentId);
+        if (!$tournament) {
+            return $this->redirect('?c=Tournament&a=index');
+        }
+
+        $existing = TournamentPlayer::getAll("tournament_id = ? AND user_id = ?", [$tournamentId, $user->user_id]);
+        if (empty($existing)) {
+            $tp = new TournamentPlayer();
+            $tp->tournament_id = $tournamentId;
+            $tp->user_id = $user->user_id;
+            $tp->save();
+        }
+
+        return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId);
+    }
+
+    public function leave(Request $request): Response
+    {
+        $user = $this->user->getIdentity();
+        if (!$user) {
+            return $this->redirect('?c=Auth&a=login');
+        }
+
+        $tournamentId = (int)$request->post('tournament_id');
+        $tournament = Tournament::getOne($tournamentId);
+        if (!$tournament) {
+            return $this->redirect('?c=Tournament&a=index');
+        }
+
+        TournamentPlayer::deleteByTournamentAndUser($tournamentId, $user->user_id);
+
+        return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId);
     }
 }

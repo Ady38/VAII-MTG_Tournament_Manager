@@ -20,8 +20,12 @@
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="<?= $link->asset('css/styl.css') ?>">
-    <link rel="stylesheet" href="<?= $link->asset('css/tournament.css') ?>">
+    <?php // tournament.css merged into styl.css ?>
     <script src="<?= $link->asset('js/script.js') ?>"></script>
+    <script src="<?= $link->asset('js/tournament_sort.js') ?>"></script>
+    <script src="<?= $link->asset('js/tournament_add_modal.js') ?>"></script>
+    <script src="<?= $link->asset('js/tournament_edit_modal.js') ?>"></script>
+    <script src="<?= $link->asset('js/tournament_sign_up_btn.js') ?>"></script>
 </head>
 <body>
 <nav class="navbar navbar-expand-sm bg-light">

@@ -27,7 +27,10 @@
                             <div class="home-next-tournament-date">
                                 <?= date('j.n.Y', strtotime($nextTournament->start_date)) ?>
                             </div>
-                            <a href="<?= $link->url('Tournament.detail', ['id' => $nextTournament->tournament_id]) ?>" class="btn btn-primary btn-lg mt-3 home-next-tournament-btn">View Details</a>
+                            <a href="<?= $link->url('Tournament.detail', ['id' => $nextTournament->tournament_id]) ?>"
+                               class="btn btn-primary btn-lg home-primary-btn home-next-tournament-btn mt-3">
+                                View Details
+                            </a>
                         </div>
                     </div>
                 <?php else: ?>
