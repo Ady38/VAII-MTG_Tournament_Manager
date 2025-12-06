@@ -36,17 +36,20 @@ if (!empty($_SESSION['add_errors'])) {
         <div class="filters-row">
             <div>
                 <label for="filter_name" class="filters-label">Name</label>
-                <input type="text" id="filter_name" name="name" value="<?= htmlspecialchars($filters['name'] ?? '', ENT_QUOTES) ?>"
+                <input type="text" id="filter_name" name="name"
+                    value="<?= htmlspecialchars($filters['name'] ?? '', ENT_QUOTES) ?>"
                     class="filters-input">
             </div>
             <div>
                 <label for="filter_location" class="filters-label">Location</label>
-                <input type="text" id="filter_location" name="location" value="<?= htmlspecialchars($filters['location'] ?? '', ENT_QUOTES) ?>"
+                <input type="text" id="filter_location" name="location"
+                    value="<?= htmlspecialchars($filters['location'] ?? '', ENT_QUOTES) ?>"
                     class="filters-input">
             </div>
             <div>
                 <label for="filter_date" class="filters-label">Date</label>
-                <input type="date" id="filter_date" name="date" value="<?= htmlspecialchars($filters['date'] ?? '', ENT_QUOTES) ?>"
+                <input type="date" id="filter_date" name="date"
+                    value="<?= htmlspecialchars($filters['date'] ?? '', ENT_QUOTES) ?>"
                     class="filters-input filters-select">
             </div>
             <div>
