@@ -16,11 +16,11 @@
         <div class="tournament-detail-value"><?= htmlspecialchars($tournament->location) ?></div>
     </div>
     <div class="tournament-detail-card">
-        <div class="tournament-detail-label">Start Date</div>
+        <div class="tournament-detail-label">Start</div>
         <div class="tournament-detail-value"><?= htmlspecialchars($tournament->start_date) ?></div>
     </div>
     <div class="tournament-detail-card">
-        <div class="tournament-detail-label">End Date</div>
+        <div class="tournament-detail-label">End</div>
         <div class="tournament-detail-value"><?= htmlspecialchars($tournament->end_date) ?></div>
     </div>
     <div class="tournament-detail-card">
@@ -28,6 +28,7 @@
         <div class="tournament-detail-value"><?= htmlspecialchars($tournament->status) ?></div>
     </div>
 </div>
+
 <a href="?c=Tournament&a=index">Back to tournaments</a>
 
 <hr>
@@ -86,4 +87,4 @@
     <?php endif; ?>
 </div>
 
-<script src="/js/tournament_sign_up_btn.js"></script>
+<script src="<?= $link->asset('js/tournament_sign_up_btn.js') ?>"></script>

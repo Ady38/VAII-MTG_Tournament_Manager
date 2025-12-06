@@ -409,3 +409,31 @@ footer {
     margin-bottom: 0.5em;
     border-radius: 6px;
 }
+
+/* Tournament detail header cards */
+.tournament-detail-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: stretch;
+    margin-bottom: 16px;
+}
+
+.tournament-detail-card {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #D4AF37;
+    border-radius: 10px;
+    padding: 10px 14px;
+    min-width: 180px;
+}
+
+.tournament-detail-label {
+    font-weight: 600;
+    color: #FFD700;
+    margin-bottom: 4px;
+}
+
+.tournament-detail-value {
+    color: #EAEAEA;
+    word-break: break-word;
+}
