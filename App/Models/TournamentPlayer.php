@@ -28,4 +28,18 @@ class TournamentPlayer extends Model
             ':u_id' => $userId,
         ]);
     }
+
+    public static function getRankingsForTournament(int $tournamentId): array
+    {
+        $sql = 'SELECT tp.*, u.username
+                FROM tournament_player tp
+                JOIN app_user u ON tp.user_id = u.user_id
+                WHERE tp.tournament_id = :tid
+                ORDER BY tp.points DESC,
+                         (tp.rank_position IS NULL) ASC,
+                         tp.rank_position ASC,
+                         u.username ASC';
+        $rows = self::executeRawSQL($sql, [':tid' => $tournamentId]);
+        return $rows;
+    }
 }

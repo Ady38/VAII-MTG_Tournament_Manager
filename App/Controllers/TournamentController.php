@@ -188,10 +188,14 @@ class TournamentController extends BaseController
 
         $isLogged = $this->user->isLoggedIn();
 
+        // Rankings: load players for this tournament ordered by points / rank_position
+        $rankings = TournamentPlayer::getRankingsForTournament((int)$tournament->tournament_id);
+
         return $this->html([
             'tournament' => $tournament,
             'isRegistered' => $isRegistered,
             'isLogged' => $isLogged,
+            'rankings' => $rankings,
         ], 'detail');
     }
 

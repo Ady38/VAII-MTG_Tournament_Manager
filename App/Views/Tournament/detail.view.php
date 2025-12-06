@@ -2,6 +2,7 @@
 /** @var object $tournament */
 /** @var bool $isRegistered */
 /** @var bool $isLogged */
+/** @var array $rankings */
 ?>
 <h1>Tournament Detail</h1>
 
@@ -57,7 +58,30 @@
             <p>Tu bude párovanie hráčov/zápasov.</p>
         </div>
         <div class="tournament-tab-content" id="tab-standings" style="display:none">
-            <p>Tu bude poradie (výsledky) turnaja.</p>
+            <?php if (!empty($rankings)): ?>
+                <table class="tournament-table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Hráč</th>
+                        <th>Body</th>
+                        <th>Pozícia</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php $i = 1; foreach ($rankings as $row): ?>
+                        <tr class="tournament-row">
+                            <td><?= $i++ ?></td>
+                            <td><?= htmlspecialchars($row['username'] ?? '') ?></td>
+                            <td><?= htmlspecialchars((string)($row['points'] ?? 0)) ?></td>
+                            <td><?= htmlspecialchars($row['rank_position'] !== null ? (string)$row['rank_position'] : '') ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p>Ešte nie sú k dispozícii žiadne výsledky tohto turnaja.</p>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
 </div>
