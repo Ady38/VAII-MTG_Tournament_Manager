@@ -56,7 +56,8 @@ if (!empty($_SESSION['add_errors'])) {
                 <label for="filter_status" class="filters-label">Status</label>
                 <select id="filter_status" name="status" class="filters-select">
                     <?php $currentStatus = $filters['status'] ?? 'all'; ?>
-                    <option value="all" <?= $currentStatus === 'all' || $currentStatus === '' ? 'selected' : '' ?>>All</option>
+                    <option value="all" <?= $currentStatus === 'all'
+                    || $currentStatus === '' ? 'selected' : '' ?>>All</option>
                     <option value="planned" <?= $currentStatus === 'planned' ? 'selected' : '' ?>>Planned</option>
                     <option value="ongoing" <?= $currentStatus === 'ongoing' ? 'selected' : '' ?>>Ongoing</option>
                     <option value="finished" <?= $currentStatus === 'finished' ? 'selected' : '' ?>>Finished</option>
@@ -69,7 +70,8 @@ if (!empty($_SESSION['add_errors'])) {
         </div>
     </form>
     <?php if ($user->isLoggedIn()): ?>
-        <button id="openAddModal" class="filters-button tournament-create-btn" type="button" title="Add tournament">Create tournament</button>
+        <button id="openAddModal" class="filters-button tournament-create-btn"
+                type="button" title="Add tournament">Create tournament</button>
     <?php endif; ?>
 </div>
 
@@ -107,9 +109,12 @@ if (!empty($_SESSION['add_errors'])) {
             <div class="edit-modal-field">
                 <label for="add_status" class="edit-modal-label">Status</label>
                 <select name="status" id="add_status" class="edit-modal-select" required>
-                    <option value="planned" <?= $addFormData['status'] === 'planned' ? 'selected' : '' ?>>Planned</option>
-                    <option value="ongoing" <?= $addFormData['status'] === 'ongoing' ? 'selected' : '' ?>>Ongoing</option>
-                    <option value="finished" <?= $addFormData['status'] === 'finished' ? 'selected' : '' ?>>Finished</option>
+                    <option value="planned"
+                            <?= $addFormData['status'] === 'planned' ? 'selected' : '' ?>>Planned</option>
+                    <option value="ongoing"
+                            <?= $addFormData['status'] === 'ongoing' ? 'selected' : '' ?>>Ongoing</option>
+                    <option value="finished"
+                            <?= $addFormData['status'] === 'finished' ? 'selected' : '' ?>>Finished</option>
                 </select>
             </div>
             <div class="edit-modal-actions">
@@ -194,8 +199,10 @@ if (!empty($_SESSION['add_errors'])) {
                            data-id="<?= $tournament->tournament_id ?>"
                            data-name="<?= htmlspecialchars($tournament->name, ENT_QUOTES) ?>"
                            data-location="<?= htmlspecialchars($tournament->location, ENT_QUOTES) ?>"
-                           data-start_date="<?= htmlspecialchars(format_datetime_local($tournament->start_date), ENT_QUOTES) ?>"
-                           data-end_date="<?= htmlspecialchars(format_datetime_local($tournament->end_date), ENT_QUOTES) ?>"
+                           data-start_date=
+                           "<?= htmlspecialchars(format_datetime_local($tournament->start_date), ENT_QUOTES) ?>"
+                           data-end_date=
+                           "<?= htmlspecialchars(format_datetime_local($tournament->end_date), ENT_QUOTES) ?>"
                            data-status="<?= htmlspecialchars($tournament->status, ENT_QUOTES) ?>">
                             Edit
                         </a>
@@ -215,4 +222,4 @@ if (!empty($_SESSION['add_errors'])) {
     </tbody>
 </table>
 
-<?php // Tournament-specific scripts are loaded globally from the root layout (tournament_sort.js, tournament_add_modal.js, tournament_edit_modal.js) ?>
+<?php ?>
