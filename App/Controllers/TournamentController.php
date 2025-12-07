@@ -218,7 +218,7 @@ class TournamentController extends BaseController
                     if (preg_match('/^\s*SB:\s*(.*)/i', $line, $m)) {
                         $found = trim($m[1]);
                         // Remove leading quantity like "1 ", "2x ", "2 × " so only the card name remains
-                        $found = preg_replace('/^\s*\d+\s*(?:x|×)?\s*/i', '', $found);
+                        $found = preg_replace('/^\s*\d+\s*[x×]?\s*/i', '', $found);
                         break;
                     }
                 }
@@ -307,7 +307,15 @@ class TournamentController extends BaseController
                 }
 
                 if (empty($errors)) {
-                    $uploadsDir = __DIR__ . '/../../public/uploads/decklists';
+                    // create a safe slug from tournament name and include tournament id to avoid collisions
+                    $slug = preg_replace('/[^a-z0-9\-]/i', '-', trim((string)$tournament->name));
+                    // reduce consecutive dashes and trim
+                    $slug = preg_replace('/-+/', '-', strtolower($slug));
+                    $slug = trim($slug, '-');
+                    // fallback if empty
+                    if ($slug === '') $slug = 'tournament-' . $tournamentId;
+
+                    $uploadsDir = __DIR__ . '/../../public/uploads/' . $tournamentId . '_' . $slug;
                     if (!is_dir($uploadsDir)) {
                         @mkdir($uploadsDir, 0777, true);
                     }
@@ -321,7 +329,8 @@ class TournamentController extends BaseController
                             $deck = new $deckModelClass();
                             $deck->user_id = $user->user_id;
                             $deck->tournament_id = $tournamentId;
-                            $deck->file_path = 'uploads/decklists/' . $finalName;
+                            // store relative web path: uploads/{tournamentId}_{slug}/{filename}
+                            $deck->file_path = 'uploads/' . $tournamentId . '_' . $slug . '/' . $finalName;
                             $deck->uploaded_at = date('Y-m-d H:i:s');
                             $deck->save();
                         }
