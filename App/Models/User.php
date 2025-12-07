@@ -7,10 +7,17 @@ use Framework\Core\IIdentity;
 
 class User extends Model implements IIdentity
 {
+    // ensure Model uses the correct table and primary key
+    protected static ?string $tableName = 'app_user';
+    protected static ?string $primaryKey = 'user_id';
+
     public ?int $user_id = null;
     public string $username = "";
     public string $password_hash = "";
     public string $email = "";
+    // added properties that exist in the DB table so Model::getDBColumnNamesList doesn't fail
+    public ?string $created_at = null;
+    public ?int $role_id = null;
 
     /**
      * Authenticate user by username and password

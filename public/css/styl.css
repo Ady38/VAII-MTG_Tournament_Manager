@@ -1,3 +1,4 @@
+/* Global navbar and theme styles */
 .navbar {
     border-bottom: 2px solid #D4AF37; /* Gold accent */
     background: linear-gradient(90deg, #1E1E1E, #3A3A3A); /* Dark gradient */
@@ -104,9 +105,66 @@ footer {
 }
 
 .home-next-tournament-card {
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid #d4af37;
-    border-radius: 18px;
+    background: rgba(0, 0, 0, 0.7) !important;
+    border: 2px solid #d4af37 !important;
+    border-radius: 18px !important;
+    color: #EAEAEA !important;
+}
+
+/* Ensure the card element and its inner areas are dark (override Bootstrap whites) */
+.home-next-tournament-card,
+.home-next-tournament-card.card,
+.home-next-tournament-card > .card-body,
+.home-next-tournament-card > .card-footer {
+    background-color: rgba(0,0,0,0.75) !important;
+    color: #EAEAEA !important;
+}
+
+.home-next-tournament-card > .card-header {
+    background-color: rgba(255,255,255,0.03) !important; /* slight contrast */
+    color: #d4af37 !important;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(212,175,55,0.08) !important;
+}
+
+/* Also ensure when the themed class is on the container (not on .card) it applies */
+.home-next-tournament-card {
+    background-color: rgba(0,0,0,0.75) !important;
+}
+.home-next-tournament-card > .card-body,
+.home-next-tournament-card > .card-footer {
+    background-color: transparent !important;
+}
+.home-next-tournament-card > .card-header {
+    background-color: rgba(255,255,255,0.03) !important;
+}
+
+/* Ensure list group and list items inside themed cards are dark */
+.home-next-tournament-card .list-group,
+.home-next-tournament-card .list-group-item {
+    background: transparent !important;
+    color: #EAEAEA !important;
+    border: 1px solid rgba(212,175,55,0.06) !important;
+}
+
+/* Make sure plain .card-header and .card-body get overridden when used with themed wrapper */
+.home-next-tournament-card .card-header,
+.home-next-tournament-card .card-body {
+    background: transparent !important;
+    color: #EAEAEA !important;
+}
+
+/* Profile avatar styling moved into CSS to keep views clean */
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    font-size: 32px;
+    background: #111;
+    color: #EAEAEA;
+    border: 1px solid #333;
 }
 
 .home-next-tournament-title {
@@ -465,3 +523,106 @@ footer {
     color: #EAEAEA;
     word-break: break-word;
 }
+
+/* Extra high-specificity overrides to ensure themed cards match tournament/main page */
+body .card.home-next-tournament-card,
+body .card.mb-3.home-next-tournament-card,
+.card.mb-3.home-next-tournament-card {
+    background-color: rgba(0,0,0,0.75) !important;
+    border: 2px solid #d4af37 !important;
+    color: #EAEAEA !important;
+}
+
+body .card.home-next-tournament-card .card-body,
+.card.home-next-tournament-card .card-body,
+.home-next-tournament-card > .card-body {
+    background-color: transparent !important;
+    color: #EAEAEA !important;
+}
+
+body .card.home-next-tournament-card .card-header,
+.card.home-next-tournament-card .card-header,
+.home-next-tournament-card > .card-header {
+    background-color: rgba(255,255,255,0.03) !important;
+    color: #d4af37 !important;
+    border-bottom: 1px solid rgba(212,175,55,0.08) !important;
+}
+
+/* Ensure card-title and small text are visible on dark background */
+.card.home-next-tournament-card .card-title,
+.home-next-tournament-card .card-title {
+    color: #EAEAEA !important;
+}
+
+.card.home-next-tournament-card .text-muted,
+.home-next-tournament-card .text-muted {
+    color: rgba(234,234,234,0.85) !important;
+}
+
+/* Ensure list group items inside themed cards are dark and not white */
+.card.home-next-tournament-card .list-group-item,
+.home-next-tournament-card .list-group-item {
+    background: transparent !important;
+    color: #EAEAEA !important;
+    border: 1px solid rgba(212,175,55,0.06) !important;
+}
+
+/* Ultra-specific overrides to force themed card appearance (last resort) */
+html body .card.mb-3.home-next-tournament-card,
+html body .card.home-next-tournament-card,
+.card.mb-3.home-next-tournament-card,
+.card.home-next-tournament-card {
+    background-color: rgba(0,0,0,0.75) !important;
+    border: 2px solid #d4af37 !important;
+    color: #EAEAEA !important;
+}
+
+html body .card.mb-3.home-next-tournament-card .card-body,
+html body .card.home-next-tournament-card .card-body,
+.card.mb-3.home-next-tournament-card .card-body,
+.card.home-next-tournament-card .card-body,
+.home-next-tournament-card .card-body {
+    background: transparent !important;
+    color: #EAEAEA !important;
+}
+
+html body .card.mb-3.home-next-tournament-card .card-header,
+html body .card.home-next-tournament-card .card-header,
+.card.mb-3.home-next-tournament-card .card-header,
+.card.home-next-tournament-card .card-header,
+.home-next-tournament-card .card-header {
+    background: rgba(255,255,255,0.03) !important;
+    color: #d4af37 !important;
+    border-bottom: 1px solid rgba(212,175,55,0.08) !important;
+}
+
+/* list-group action items */
+html body .home-next-tournament-card .list-group-item,
+.card.home-next-tournament-card .list-group-item,
+.home-next-tournament-card .list-group-item,
+.home-next-tournament-card a.list-group-item-action {
+    background: transparent !important;
+    color: #EAEAEA !important;
+    border: 1px solid rgba(212,175,55,0.06) !important;
+}
+
+/* buttons */
+.card.home-next-tournament-card .btn-secondary,
+.home-next-tournament-card .btn-secondary {
+    background: #333 !important;
+    border-color: #555 !important;
+    color: #EAEAEA !important;
+}
+
+/* ensure no white shadows or box background remains */
+.card.home-next-tournament-card .card,
+.card.home-next-tournament-card .card-body,
+.card.home-next-tournament-card .card-header,
+.home-next-tournament-card .card,
+.home-next-tournament-card .card-body,
+.home-next-tournament-card .card-header {
+    box-shadow: none !important;
+    background-image: none !important;
+}
+
+/* end ultra-specific overrides */

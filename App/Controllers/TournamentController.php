@@ -394,8 +394,30 @@ class TournamentController extends BaseController
             return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId);
         }
 
-        TournamentPlayer::deleteByTournamentAndUser($tournamentId, $user->user_id);
+        // Remove tournament player record(s) for this user
+        try {
+            TournamentPlayer::deleteByTournamentAndUser($tournamentId, $user->user_id);
+        } catch (\Exception $e) {
+            // fallback: try deleting any returned models
+            $rows = TournamentPlayer::getAll('tournament_id = ? AND user_id = ?', [$tournamentId, $user->user_id]);
+            foreach ($rows as $r) {
+                try { $r->delete(); } catch (\Exception $e) { /* ignore */ }
+            }
+        }
 
+        // Also delete any decklists uploaded by this user for this tournament
+        $deckrows = Decklist::getAll('tournament_id = ? AND user_id = ?', [$tournamentId, $user->user_id]);
+        foreach ($deckrows as $d) {
+            if (!empty($d->file_path)) {
+                $full = __DIR__ . '/../../public/' . $d->file_path;
+                if (is_file($full)) @unlink($full);
+            }
+            try { $d->delete(); } catch (\Exception $e) { /* ignore */ }
+        }
+
+        $_SESSION['leave_success'] = 'You have been unregistered from the tournament.';
         return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId);
     }
+
 }
+

@@ -168,4 +168,32 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    // Also attach click handler to plain links with class commander-name-link to open Scryfall (they are regular anchors already)
+    document.querySelectorAll('.commander-name-link').forEach(function (a) {
+        a.addEventListener('click', function (ev) {
+            // let normal navigation to detail page happen if user holds ctrl/shift or uses right click; but since these links point to internal detail view, we intercept only simple clicks
+            if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+            ev.preventDefault();
+            const name = decodeURIComponent((new URL(a.href, window.location.origin)).searchParams.get('name') || '');
+            if (!name) return; // fallback to normal
+            // Attempt to open Scryfall directly for the card; if not found, open search
+            (async function () {
+                const card = await fetchCard(name);
+                if (card && card.scryfall_uri) {
+                    window.open(card.scryfall_uri, '_blank');
+                } else {
+                    const searchUrl = 'https://scryfall.com/search?q=' + encodeURIComponent('"' + name + '"');
+                    window.open(searchUrl, '_blank');
+                }
+            })();
+        });
+    });
 });
+
+
+
+
+
+
+

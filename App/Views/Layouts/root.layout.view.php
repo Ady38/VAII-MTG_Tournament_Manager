@@ -17,7 +17,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="<?= $link->asset('css/styl.css') ?>">
+    <?php $cssFile = __DIR__ . '/../../../public/css/styl.css';
+    $ver = is_file($cssFile) ? filemtime($cssFile) : time(); ?>
+    <link rel="stylesheet" href="<?= $link->asset('css/styl.css') ?>?v=<?= $ver ?>">
     <script src="<?= $link->asset('js/script.js') ?>"></script>
     <script src="<?= $link->asset('js/tournament_sort.js') ?>"></script>
     <script src="<?= $link->asset('js/tournament_add_modal.js') ?>"></script>
@@ -34,12 +36,20 @@
             <li class="nav-item">
                 <a class="nav-link" href="<?= $link->url('Tournament.index') ?>">Tournaments</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="<?= $link->url('Statistics.index') ?>">Statistics</a>
+            </li>
         </ul>
         <?php if ($user->isLoggedIn()) { ?>
-            <span class="navbar-text">Logged in user: <b><?= $user->getName() ?></b></span>
+            <?php $identity = $user->getIdentity(); ?>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="<?= $link->url('auth.logout') ?>">Log out</a>
+                    <!-- username links to the user's detail page -->
+                    <a class="nav-link" href="<?= $link->url('User.detail', ['id' => $identity->user_id]) ?>">Logged in user: <b><?= htmlspecialchars($user->getName()) ?></b></a>
+                </li>
+                <li class="nav-item">
+                    <!-- logout link next to username -->
+                    <a class="nav-link" href="<?= $link->url('Auth.logout') ?>">Log out</a>
                 </li>
             </ul>
         <?php } else { ?>
