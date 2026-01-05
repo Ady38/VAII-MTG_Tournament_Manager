@@ -174,52 +174,54 @@ if (!empty($_SESSION['add_errors'])) {
 </div>
 <?php endif; ?>
 
-<table id="tournamentTable" class="tournament-table">
-    <thead>
-        <tr>
-            <th data-sort="text">Name</th>
-            <th data-sort="text">Location</th>
-            <th data-sort="date">Start Date</th>
-            <th data-sort="date">End Date</th>
-            <th data-sort="text">Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach ($tournaments as $tournament): ?>
-            <tr class="tournament-row">
-                <td><?= htmlspecialchars($tournament->name) ?></td>
-                <td><?= htmlspecialchars($tournament->location) ?></td>
-                <td><?= htmlspecialchars($tournament->start_date) ?></td>
-                <td><?= htmlspecialchars($tournament->end_date) ?></td>
-                <td><?= htmlspecialchars($tournament->status) ?></td>
-                <td>
-                    <?php if ($user->isLoggedIn()): ?>
-                        <a href="#" class="edit-link tournament-action-edit"
-                           data-id="<?= $tournament->tournament_id ?>"
-                           data-name="<?= htmlspecialchars($tournament->name, ENT_QUOTES) ?>"
-                           data-location="<?= htmlspecialchars($tournament->location, ENT_QUOTES) ?>"
-                           data-start_date=
-                           "<?= htmlspecialchars(format_datetime_local($tournament->start_date), ENT_QUOTES) ?>"
-                           data-end_date=
-                           "<?= htmlspecialchars(format_datetime_local($tournament->end_date), ENT_QUOTES) ?>"
-                           data-status="<?= htmlspecialchars($tournament->status, ENT_QUOTES) ?>">
-                            Edit
-                        </a>
-                        <span class="tournament-action-separator">|</span>
-                        <a href="<?= $link->url('Tournament.delete', ['id' => $tournament->tournament_id]) ?>"
-                           class="tournament-action-delete"
-                           onclick="return confirm('Are you sure?')">
-                            Delete
-                        </a>
-                        <span class="tournament-action-separator">|</span>
-                    <?php endif; ?>
-                    <a href="<?= $link->url('Tournament.detail', ['id' => $tournament->tournament_id]) ?>"
-                       class="tournament-action-detail">Detail</a>
-                </td>
+<div class="table-responsive">
+    <table id="tournamentTable" class="tournament-table">
+        <thead>
+            <tr>
+                <th data-sort="text">Name</th>
+                <th data-sort="text">Location</th>
+                <th data-sort="date">Start Date</th>
+                <th data-sort="date">End Date</th>
+                <th data-sort="text">Status</th>
+                <th>Actions</th>
             </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            <?php foreach ($tournaments as $tournament): ?>
+                <tr class="tournament-row">
+                    <td><?= htmlspecialchars($tournament->name) ?></td>
+                    <td><?= htmlspecialchars($tournament->location) ?></td>
+                    <td><?= htmlspecialchars($tournament->start_date) ?></td>
+                    <td><?= htmlspecialchars($tournament->end_date) ?></td>
+                    <td><?= htmlspecialchars($tournament->status) ?></td>
+                    <td>
+                        <?php if ($user->isLoggedIn()): ?>
+                            <a href="#" class="edit-link tournament-action-edit"
+                               data-id="<?= $tournament->tournament_id ?>"
+                               data-name="<?= htmlspecialchars($tournament->name, ENT_QUOTES) ?>"
+                               data-location="<?= htmlspecialchars($tournament->location, ENT_QUOTES) ?>"
+                               data-start_date=
+                               "<?= htmlspecialchars(format_datetime_local($tournament->start_date), ENT_QUOTES) ?>"
+                               data-end_date=
+                               "<?= htmlspecialchars(format_datetime_local($tournament->end_date), ENT_QUOTES) ?>"
+                               data-status="<?= htmlspecialchars($tournament->status, ENT_QUOTES) ?>">
+                                Edit
+                            </a>
+                            <span class="tournament-action-separator">|</span>
+                            <a href="<?= $link->url('Tournament.delete', ['id' => $tournament->tournament_id]) ?>"
+                               class="tournament-action-delete"
+                               onclick="return confirm('Are you sure?')">
+                                Delete
+                            </a>
+                            <span class="tournament-action-separator">|</span>
+                        <?php endif; ?>
+                        <a href="<?= $link->url('Tournament.detail', ['id' => $tournament->tournament_id]) ?>"
+                           class="tournament-action-detail">Detail</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
 
 <?php ?>

@@ -9,7 +9,8 @@ class TournamentPlayer extends Model
     public ?int $tournament_player_id = null;
     public int $tournament_id;
     public int $user_id;
-    public ?int $points = 0;
+    // Points for matches (win=3, draw=1, loss=0)
+    public ?float $points = 0.0;
     public ?int $rank_position = null;
 
     protected static string $table = 'tournament_player';

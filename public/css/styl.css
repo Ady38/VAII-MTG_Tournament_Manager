@@ -226,7 +226,12 @@ footer {
     max-width: 600px;
 }
 
-/* === Tournament specific styles (merged from tournament.css) === */
+/* === Migrated from public/css/tournament.css ===
+   The following block was moved from tournament.css so the project uses a single stylesheet (styl.css).
+   If you want to remove tournament.css entirely, update references accordingly in your templates.
+*/
+
+/* Begin migrated tournament.css */
 .tournaments-title {
     text-align: center;
     font-family: 'Garamond', serif;
@@ -405,22 +410,80 @@ footer {
     font-family: 'Garamond', serif;
     background-color: #0D0D0D;
     color: #EAEAEA;
+    /* Ensure columns keep fixed widths */
+    table-layout: fixed;
 }
+
+/* Prevent cells from growing and enable ellipsis for overflow; add visible borders between rows/columns */
+.tournament-table th,
+.tournament-table td {
+    border: 1px solid #D4AF37;
+    padding: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Suggested column width distribution for 4-column tables (Match / Player1 / Player2 / Result) */
+.tournament-table th:nth-child(1),
+.tournament-table td:nth-child(1) {
+    width: 8%;
+}
+.tournament-table th:nth-child(2),
+.tournament-table td:nth-child(2) {
+    width: 36%;
+}
+.tournament-table th:nth-child(3),
+.tournament-table td:nth-child(3) {
+    width: 36%;
+}
+.tournament-table th:nth-child(4),
+.tournament-table td:nth-child(4) {
+    width: 20%;
+}
+
+/* Stable column widths for standings table (7 columns: #, Player, Points, GWP, OGWP, OMWP, Commander) */
+.tournament-table thead tr th:nth-child(1),
+.tournament-table tbody tr td:nth-child(1) {
+    width: 6%;
+}
+.tournament-table thead tr th:nth-child(2),
+.tournament-table tbody tr td:nth-child(2) {
+    width: 28%;
+    text-align: left;
+}
+.tournament-table thead tr th:nth-child(3),
+.tournament-table tbody tr td:nth-child(3) {
+    width: 12%;
+    text-align: center;
+}
+.tournament-table thead tr th:nth-child(4),
+.tournament-table tbody tr td:nth-child(4) {
+    width: 12%;
+    text-align: center;
+}
+.tournament-table thead tr th:nth-child(5),
+.tournament-table tbody tr td:nth-child(5) {
+    width: 12%;
+    text-align: center;
+}
+.tournament-table thead tr th:nth-child(6),
+.tournament-table tbody tr td:nth-child(6) {
+    width: 12%;
+    text-align: center;
+}
+.tournament-table thead tr th:nth-child(7),
+.tournament-table tbody tr td:nth-child(7) {
+    width: 18%;
+    text-align: left;
+}
+
+/* For tables with different column counts the widths will be best-effort; adjust if needed per table */
 
 .tournament-table thead tr {
     background-color: #3A3A3A;
     color: #FFD700;
     text-align: center;
-}
-
-.tournament-table th,
-.tournament-table td {
-    border: 1px solid #D4AF37;
-    padding: 8px;
-}
-
-.tournament-table th[data-sort] {
-    cursor: pointer;
 }
 
 .tournament-row {
@@ -452,40 +515,13 @@ footer {
     color: #fff;
 }
 
-/* Ensure muted/helper text inside the dark tournament tabs is readable */
-.tournament-tabs-frame .text-muted {
-    /* make the helper text stand out on dark background: use bright gold */
-    color: #FFD700 !important;
-    font-weight: 700 !important;
-    opacity: 1 !important;
-}
-
-/* Links inside the tabs should be visible against the dark background (use theme gold) */
-.tournament-tabs-frame a:link,
-.tournament-tabs-frame a:visited {
-    color: #FFD700 !important;
-}
-.tournament-tabs-frame a:hover,
-.tournament-tabs-frame a:active {
-    color: #FFF2B8 !important;
-}
-
+/* Keep inner tab contents simple; outer frame provides the main border */
 .tournament-tabs-frame .tournament-tab-content {
     border: none;
     background: transparent;
     padding: 0;
     margin: 0;
 }
-
-/* Commander text hint: only the inner link is interactive */
-.commander-link {
-    cursor: pointer;
-    text-decoration: underline dotted;
-    /* ensure visible on dark background: use light/gold color */
-    color: #EAEAEA; /* default light text */
-}
-.commander-link:visited { color: #EAEAEA; }
-.commander-link:hover { color: #FFD700; }
 
 .tournament-create-btn {
     font-size: 0.9em;
@@ -496,133 +532,232 @@ footer {
     border-radius: 6px;
 }
 
-/* Tournament detail header cards */
-.tournament-detail-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    align-items: stretch;
-    margin-bottom: 16px;
-}
-
-.tournament-detail-card {
-    background: rgba(0, 0, 0, 0.7);
+/* Responsive table wrapper: allows horizontal scrolling on narrow screens */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Add visible border for pairings and standings tables */
     border: 1px solid #D4AF37;
-    border-radius: 10px;
-    padding: 10px 14px;
-    min-width: 180px;
+    border-radius: 8px;
+    padding: 8px;
+    background-clip: padding-box; /* ensure border doesn't overlap table */
 }
 
-.tournament-detail-label {
-    font-weight: 600;
+/* Tables inside .table-responsive get a minimum width so they don't compress columns too much
+   and will allow horizontal scrolling when container is smaller than the table. */
+.table-responsive table {
+    min-width: 600px;
+    /* keep layout fixed for stable columns on larger screens */
+    table-layout: fixed;
+}
+
+/* Generic responsive table helper: apply to any table you want responsive without extra wrapper */
+table.responsive {
+    width: 100%;
+    max-width: 100%;
+    display: table;
+}
+
+/* Make every table responsive on narrow viewports: enable horizontal scrolling instead of forcing columns to resize.
+   This is a safe fallback that preserves desktop fixed-layout behavior while making tables usable on small screens. */
+@media (max-width: 900px) {
+    /* Turn tables into block-level scrollable elements so they don't overflow the layout */
+    table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        /* prevent interior content from wrapping in a way that changes column sizing */
+        white-space: nowrap;
+    }
+
+    /* Keep cells readable by allowing wrapping inside cells if necessary on very small screens */
+    table th, table td {
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 480px) {
+    /* On very small devices, allow table cells to wrap to multiple lines for readability */
+    table, .table-responsive table, table.responsive {
+        table-layout: auto !important;
+    }
+    table th, table td, .table-responsive table th, .table-responsive table td {
+        white-space: normal !important;
+        word-break: break-word;
+    }
+}
+
+/* === Overrides: restore original style for tournaments index table === */
+#tournamentTable {
+    /* use automatic layout so columns size by content (restore original behavior) */
+    table-layout: auto !important;
+    width: 100%;
+    border-collapse: collapse; /* keep single borders between cells */
+}
+#tournamentTable th,
+#tournamentTable td {
+    /* allow wrapping and normal overflow for index table so style matches previous look */
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    border: 1px solid #D4AF37 !important; /* ensure visible separators */
+    padding: 8px !important;
+}
+/* Remove any fixed widths applied by .tournament-table nth-child rules for the index table */
+#tournamentTable th:nth-child(n),
+#tournamentTable td:nth-child(n) {
+    width: auto !important;
+}
+
+/* Optional: make header visually consistent with previous theme */
+#tournamentTable thead tr {
+    background-color: #3A3A3A;
     color: #FFD700;
-    margin-bottom: 4px;
 }
 
-.tournament-detail-value {
-    color: #EAEAEA;
-    word-break: break-word;
+/* End of index table overrides */
+
+/* Ensure tournament tables use collapsed borders and bright gold separators */
+.tournament-table,
+#tournamentTable {
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
 }
 
-/* Extra high-specificity overrides to ensure themed cards match tournament/main page */
-body .card.home-next-tournament-card,
-body .card.mb-3.home-next-tournament-card,
-.card.mb-3.home-next-tournament-card {
-    background-color: rgba(0,0,0,0.75) !important;
-    border: 2px solid #d4af37 !important;
-    color: #EAEAEA !important;
-}
-
-body .card.home-next-tournament-card .card-body,
-.card.home-next-tournament-card .card-body,
-.home-next-tournament-card > .card-body {
-    background-color: transparent !important;
-    color: #EAEAEA !important;
-}
-
-body .card.home-next-tournament-card .card-header,
-.card.home-next-tournament-card .card-header,
-.home-next-tournament-card > .card-header {
-    background-color: rgba(255,255,255,0.03) !important;
-    color: #d4af37 !important;
-    border-bottom: 1px solid rgba(212,175,55,0.08) !important;
-}
-
-/* Ensure card-title and small text are visible on dark background */
-.card.home-next-tournament-card .card-title,
-.home-next-tournament-card .card-title {
-    color: #EAEAEA !important;
-}
-
-.card.home-next-tournament-card .text-muted,
-.home-next-tournament-card .text-muted {
-    color: rgba(234,234,234,0.85) !important;
-}
-
-/* Ensure list group items inside themed cards are dark and not white */
-.card.home-next-tournament-card .list-group-item,
-.home-next-tournament-card .list-group-item {
-    background: transparent !important;
-    color: #EAEAEA !important;
-    border: 1px solid rgba(212,175,55,0.06) !important;
-}
-
-/* Ultra-specific overrides to force themed card appearance (last resort) */
-html body .card.mb-3.home-next-tournament-card,
-html body .card.home-next-tournament-card,
-.card.mb-3.home-next-tournament-card,
-.card.home-next-tournament-card {
-    background-color: rgba(0,0,0,0.75) !important;
-    border: 2px solid #d4af37 !important;
-    color: #EAEAEA !important;
-}
-
-html body .card.mb-3.home-next-tournament-card .card-body,
-html body .card.home-next-tournament-card .card-body,
-.card.mb-3.home-next-tournament-card .card-body,
-.card.home-next-tournament-card .card-body,
-.home-next-tournament-card .card-body {
-    background: transparent !important;
-    color: #EAEAEA !important;
-}
-
-html body .card.mb-3.home-next-tournament-card .card-header,
-html body .card.home-next-tournament-card .card-header,
-.card.mb-3.home-next-tournament-card .card-header,
-.card.home-next-tournament-card .card-header,
-.home-next-tournament-card .card-header {
-    background: rgba(255,255,255,0.03) !important;
-    color: #d4af37 !important;
-    border-bottom: 1px solid rgba(212,175,55,0.08) !important;
-}
-
-/* list-group action items */
-html body .home-next-tournament-card .list-group-item,
-.card.home-next-tournament-card .list-group-item,
-.home-next-tournament-card .list-group-item,
-.home-next-tournament-card a.list-group-item-action {
-    background: transparent !important;
-    color: #EAEAEA !important;
-    border: 1px solid rgba(212,175,55,0.06) !important;
-}
-
-/* buttons */
-.card.home-next-tournament-card .btn-secondary,
-.home-next-tournament-card .btn-secondary {
-    background: #333 !important;
-    border-color: #555 !important;
-    color: #EAEAEA !important;
-}
-
-/* ensure no white shadows or box background remains */
-.card.home-next-tournament-card .card,
-.card.home-next-tournament-card .card-body,
-.card.home-next-tournament-card .card-header,
-.home-next-tournament-card .card,
-.home-next-tournament-card .card-body,
-.home-next-tournament-card .card-header {
+.tournament-table th,
+.tournament-table td,
+#tournamentTable th,
+#tournamentTable td {
+    border: 1px solid #FFD700 !important; /* brighter gold for visibility */
     box-shadow: none !important;
-    background-image: none !important;
 }
 
-/* end ultra-specific overrides */
+/* Also ensure the table wrapper doesn't obscure the inner borders (no inner background bleed) */
+.table-responsive {
+    background: transparent !important;
+    padding: 6px !important; /* keep a small gap from the outer border */
+}
+
+/* === Final enforced override for the tournaments index table === */
+/* This block is extremely specific and uses !important to override other rules that affected the index table layout. */
+table#tournamentTable.tournament-table {
+    table-layout: auto !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    background: transparent !important;
+}
+
+/* cell borders and spacing */
+table#tournamentTable.tournament-table th,
+table#tournamentTable.tournament-table td {
+    border: 1px solid #D4AF37 !important; /* gold separators */
+    padding: 10px !important;
+    white-space: normal !important; /* allow wrapping */
+    overflow: visible !important;
+    text-overflow: clip !important;
+    background: transparent !important;
+    color: inherit !important;
+}
+
+/* make header distinct */
+table#tournamentTable.tournament-table thead th {
+    background-color: #3A3A3A !important;
+    color: #FFD700 !important;
+    border-bottom: 2px solid #D4AF37 !important;
+}
+
+/* remove any fixed width rules that may have been applied earlier */
+table#tournamentTable.tournament-table th:nth-child(n),
+table#tournamentTable.tournament-table td:nth-child(n) {
+    width: auto !important;
+}
+
+/* ensure alternating row backgrounds remain subtle and don't hide borders */
+table#tournamentTable.tournament-table tbody tr:nth-child(odd) td {
+    background: rgba(255,255,255,0.02) !important;
+}
+
+/* End enforced override for tournament index table */
+
+/* Visual feedback when result is saved via AJAX */
+.result-label.result-saved {
+    background: rgba(52, 199, 89, 0.15); /* subtle green highlight */
+    border-radius: 4px;
+    padding: 2px 6px;
+    transition: background 0.5s ease, color 0.3s ease;
+    display: inline-block;
+}
+
+/* Disabled selects for non-editable matches: make clear they are disabled */
+.result-select[disabled] {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background-color: rgba(255,255,255,0.02);
+    color: #ccc;
+    border: 1px solid rgba(212,175,55,0.06);
+}
+
+/* Small helper: make result label slightly bolder for visibility */
+.result-label {
+    font-weight: 600;
+    /* Ensure the label has stable dimensions so the saved highlight doesn't resize the table */
+    display: inline-block;
+    padding: 2px 6px; /* same as .result-label.result-saved to avoid layout shift */
+    box-sizing: border-box;
+}
+
+/* Ensure small helper/muted text inside tournament panels is readable on dark background */
+.tournament-tabs-frame .text-muted,
+.tournament-tabs-frame small.text-muted,
+.tournament-tabs-frame .text-muted a {
+    color: #EAEAEA !important; /* light color to be readable on dark background */
+    opacity: 0.9 !important;
+}
+
+/* Ensure muted/helper text inside themed cards (profile, recent tournaments) is pure white for contrast */
+.home-next-tournament-card .text-muted,
+.home-next-tournament-card small.text-muted,
+.home-next-tournament-card .list-group-item .text-muted,
+.home-next-tournament-card .list-group-item small {
+    color: #FFFFFF !important;
+    opacity: 1 !important;
+}
+
+/* Layout tweaks for tournament detail small cards: show them inline in a row and wrap on small screens */
+.tournament-detail-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    align-items: stretch !important; /* make cards equal height */
+    margin-bottom: 16px !important;
+}
+
+/* Ensure each small card behaves as a flex-item and doesn't expand to full width unless constrained */
+.tournament-detail-row .home-next-tournament-card {
+    flex: 0 0 auto !important;
+    display: block !important;
+}
+
+/* Make the inner card-body stretch so card heights match when labels/values differ */
+.tournament-detail-row .card-body.tournament-detail-card {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+/* On narrow screens stack cards vertically and let them be full-width */
+@media (max-width: 768px) {
+    .tournament-detail-row {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    .tournament-detail-row .home-next-tournament-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+}

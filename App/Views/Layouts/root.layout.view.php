@@ -27,38 +27,46 @@
     <script src="<?= $link->asset('js/tournament_sign_up_btn.js') ?>"></script>
 </head>
 <body>
-<nav class="navbar navbar-expand-sm bg-light">
+<nav class="navbar navbar-expand-sm navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="<?= $link->url('home.index') ?>">
             <img src="<?= $link->asset('images/logo_empty.png') ?>" title="<?= App\Configuration::APP_NAME ?>" alt="Framework Logo">
         </a>
-        <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="<?= $link->url('Tournament.index') ?>">Tournaments</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="<?= $link->url('Statistics.index') ?>">Statistics</a>
-            </li>
-        </ul>
-        <?php if ($user->isLoggedIn()) { ?>
-            <?php $identity = $user->getIdentity(); ?>
-            <ul class="navbar-nav ms-auto">
+        <!-- Toggler for small screens -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-sm-0">
                 <li class="nav-item">
-                    <!-- username links to the user's detail page -->
-                    <a class="nav-link" href="<?= $link->url('User.detail', ['id' => $identity->user_id]) ?>">Logged in user: <b><?= htmlspecialchars($user->getName()) ?></b></a>
+                    <a class="nav-link" href="<?= $link->url('Tournament.index') ?>">Tournaments</a>
                 </li>
                 <li class="nav-item">
-                    <!-- logout link next to username -->
-                    <a class="nav-link" href="<?= $link->url('Auth.logout') ?>">Log out</a>
+                    <a class="nav-link" href="<?= $link->url('Statistics.index') ?>">Statistics</a>
                 </li>
             </ul>
-        <?php } else { ?>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= App\Configuration::LOGIN_URL ?>">Log in</a>
-                </li>
-            </ul>
-        <?php } ?>
+
+            <?php if ($user->isLoggedIn()) { ?>
+                <?php $identity = $user->getIdentity(); ?>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <!-- username links to the user's detail page -->
+                        <a class="nav-link" href="<?= $link->url('User.detail', ['id' => $identity->user_id]) ?>">Logged in user: <b><?= htmlspecialchars($user->getName()) ?></b></a>
+                    </li>
+                    <li class="nav-item">
+                        <!-- logout link next to username -->
+                        <a class="nav-link" href="<?= $link->url('Auth.logout') ?>">Log out</a>
+                    </li>
+                </ul>
+            <?php } else { ?>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= App\Configuration::LOGIN_URL ?>">Log in</a>
+                    </li>
+                </ul>
+            <?php } ?>
+        </div>
     </div>
 </nav>
 <div class="container-fluid mt-3">
