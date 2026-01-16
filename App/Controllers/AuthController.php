@@ -63,6 +63,49 @@ class AuthController extends BaseController
     }
 
     /**
+     * Registers a new user account.
+     * Handles GET (show form) and POST (process registration) requests.
+     */
+    public function register(Request $request): Response
+    {
+        $message = null;
+        if ($request->hasValue('submit')) {
+            $username = trim((string)$request->value('username'));
+            $email = trim((string)$request->value('email'));
+            $password = (string)$request->value('password');
+            $password2 = (string)$request->value('password2');
+
+            $errors = [];
+            if (strlen($username) < 3) $errors[] = 'Username must be at least 3 characters.';
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Please provide a valid email address.';
+            if (strlen($password) < 6) $errors[] = 'Password must be at least 6 characters.';
+            if ($password !== $password2) $errors[] = 'Passwords do not match.';
+
+            // Check uniqueness
+            if (User::findOne(['username' => $username])) $errors[] = 'Username already exists.';
+            if (User::findOne(['email' => $email])) $errors[] = 'Email is already in use.';
+
+            if (empty($errors)) {
+                $user = new User();
+                $user->username = $username;
+                $user->email = $email;
+                $user->password_hash = password_hash($password, PASSWORD_DEFAULT);
+                // default role: player (role_id = 3)
+                $user->role_id = 3;
+                $user->save();
+
+                // flash message via session
+                $this->app->getSession()->set('register_success', 'Account created successfully. Please log in.');
+                return $this->redirect(Configuration::LOGIN_URL);
+            }
+
+            $message = implode('<br>', $errors);
+        }
+
+        return $this->html(compact('message'));
+    }
+
+    /**
      * Logs out the current user.
      *
      * This action terminates the user's session and redirects them to a view. It effectively clears any authentication
@@ -76,3 +119,4 @@ class AuthController extends BaseController
         return $this->html();
     }
 }
+

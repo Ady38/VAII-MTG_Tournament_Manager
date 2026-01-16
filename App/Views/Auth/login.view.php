@@ -5,6 +5,11 @@
 /** @var \Framework\Support\View $view */
 
 $view->setLayout('auth');
+
+// Check for registration success message in session (flash)
+$regSuccess = null;
+if (session_status() == PHP_SESSION_NONE) session_start();
+if (!empty($_SESSION['register_success'])) { $regSuccess = $_SESSION['register_success']; unset($_SESSION['register_success']); }
 ?>
 
 <div class="container">
@@ -17,6 +22,10 @@ $view->setLayout('auth');
                 </div>
                 <div class="card-body">
                     <h5 class="card-title text-center">Sign in</h5>
+
+                    <?php if ($regSuccess): ?>
+                        <div class="text-center text-success mb-3"><?= htmlspecialchars($regSuccess) ?></div>
+                    <?php endif; ?>
 
                     <div class="text-center text-danger mb-3">
                         <?= @$message ?>
@@ -40,6 +49,10 @@ $view->setLayout('auth');
                             <button class="home-primary-btn w-100" type="submit" name="submit">Log in</button>
                         </div>
                     </form>
+
+                    <div class="text-center mt-3">
+                        Don't have an account? <a href="<?= $link->url('auth.register') ?>">Register</a>
+                    </div>
                 </div>
             </div>
         </div>
