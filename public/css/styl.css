@@ -277,8 +277,16 @@ footer {
     color: #EAEAEA;
 }
 
-.filters-select {
-    color-scheme: dark;
+/* Ensure inputs keep dark theme when focused (override Bootstrap .form-control:focus) */
+.filters-input:focus,
+.home-next-tournament-card .filters-input:focus,
+.home-next-tournament-card .form-control:focus,
+.tournament-tabs-frame .filters-input:focus {
+    background: #070707 !important;
+    color: #EAEAEA !important;
+    border-color: #d4af37 !important;
+    box-shadow: 0 0 0 6px rgba(212,175,55,0.05) !important;
+    outline: none !important;
 }
 
 .filters-actions {
@@ -761,3 +769,144 @@ table#tournamentTable.tournament-table tbody tr:nth-child(odd) td {
         min-width: 0 !important;
     }
 }
+
+/* Override browser autofill and focus styles so inputs keep the dark background and light text */
+input.filters-input,
+input.form-control,
+textarea.filters-input,
+select.filters-input {
+    -webkit-appearance: none;
+    background-clip: padding-box;
+}
+
+/* Chrome/Edge/WebKit autofill */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #070707 inset !important; /* fill with themed dark background */
+    box-shadow: 0 0 0px 1000px #070707 inset !important;
+    -webkit-text-fill-color: #EAEAEA !important; /* keep light text */
+    border-color: #d4af37 !important;
+}
+
+/* Remove default focus outline/halo from browsers and enforce themed focus */
+input.form-control:focus,
+input.filters-input:focus,
+textarea.filters-input:focus,
+select.filters-input:focus {
+    outline: none !important;
+    -webkit-box-shadow: 0 0 0 6px rgba(212,175,55,0.05) !important;
+    box-shadow: 0 0 0 6px rgba(212,175,55,0.05) !important;
+    border-color: #d4af37 !important;
+    background: #070707 !important;
+    color: #EAEAEA !important;
+}
+
+/* Also ensure password fields don't show system-specific contrast on focus */
+input[type="password"],
+input[type="password"]:focus,
+input[type="password"]:-webkit-autofill {
+    background: #070707 !important;
+    color: #EAEAEA !important;
+    -webkit-text-fill-color: #EAEAEA !important;
+}
+
+/* Stronger overrides for inputs inside themed cards to prevent white background/blue focus ring */
+.home-next-tournament-card input.form-control,
+.home-next-tournament-card input.filters-input,
+.home-next-tournament-card textarea.filters-input,
+.home-next-tournament-card select.filters-input {
+    background: #070707 !important;
+    color: #EAEAEA !important;
+    border-color: #d4af37 !important;
+    -webkit-text-fill-color: #EAEAEA !important;
+}
+
+.home-next-tournament-card input.form-control:focus,
+.home-next-tournament-card input.filters-input:focus,
+.home-next-tournament-card textarea.filters-input:focus,
+.home-next-tournament-card select.filters-input:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 6px rgba(212,175,55,0.05) !important;
+    -webkit-box-shadow: 0 0 0 6px rgba(212,175,55,0.05) !important;
+    background: #070707 !important;
+    color: #EAEAEA !important;
+    border-color: #d4af37 !important;
+}
+
+/* Autofill inside themed cards (extra-specific) */
+.home-next-tournament-card input:-webkit-autofill,
+.home-next-tournament-card textarea:-webkit-autofill,
+.home-next-tournament-card select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #070707 inset !important;
+    box-shadow: 0 0 0px 1000px #070707 inset !important;
+    -webkit-text-fill-color: #EAEAEA !important;
+    color: #EAEAEA !important;
+    border-color: #d4af37 !important;
+}
+
+/* Firefox inner focus outline reset (for completeness) */
+.home-next-tournament-card input:-moz-focusring {
+    outline: none !important;
+}
+
+/* Final strong overrides to prevent white fields or blue/bright focus/autofill styling inside themed cards */
+.home-next-tournament-card .form-control,
+.home-next-tournament-card input,
+.home-next-tournament-card textarea,
+.home-next-tournament-card select {
+    background-color: #070707 !important;
+    background-image: none !important;
+    color: #EAEAEA !important;
+    caret-color: #EAEAEA !important;
+    border-color: #d4af37 !important;
+}
+
+/* Ensure focus doesn't switch to browser default (blue ring / white background) */
+.home-next-tournament-card .form-control:focus,
+.home-next-tournament-card input:focus,
+.home-next-tournament-card textarea:focus,
+.home-next-tournament-card select:focus {
+    background-color: #070707 !important;
+    background-image: none !important;
+    color: #EAEAEA !important;
+    outline: none !important;
+    -webkit-box-shadow: 0 0 0 6px rgba(212,175,55,0.05) !important;
+    box-shadow: 0 0 0 6px rgba(212,175,55,0.05) !important;
+    border-color: #d4af37 !important;
+}
+
+/* Cover many autofill/selection pseudo-classes used by WebKit/Blink */
+.home-next-tournament-card input:-webkit-autofill,
+.home-next-tournament-card textarea:-webkit-autofill,
+.home-next-tournament-card select:-webkit-autofill,
+.home-next-tournament-card input:-webkit-autofill:hover,
+.home-next-tournament-card input:-webkit-autofill:focus,
+.home-next-tournament-card textarea:-webkit-autofill:focus,
+.home-next-tournament-card select:-webkit-autofill:focus,
+.home-next-tournament-card input:-internal-autofill-selected {
+    -webkit-box-shadow: 0 0 0px 1000px #070707 inset !important;
+    box-shadow: 0 0 0px 1000px #070707 inset !important;
+    -webkit-text-fill-color: #EAEAEA !important;
+    color: #EAEAEA !important;
+    background-image: none !important;
+    border-color: #d4af37 !important;
+}
+
+/* Some browsers add an inner focus outline for password fields; reset and reapply themed shadow */
+.home-next-tournament-card input[type="password"]::-ms-reveal,
+.home-next-tournament-card input[type="password"]::-ms-clear {
+    display: none;
+}
+
+/* Fallback: if any UA stylesheet still forces white background, enforce using important on background-color on more specific selectors */
+.home-next-tournament-card .form-control[autocomplete],
+.home-next-tournament-card .form-control[autofill] {
+    background-color: #070707 !important;
+    color: #EAEAEA !important;
+}
+
+/* End strong overrides */
