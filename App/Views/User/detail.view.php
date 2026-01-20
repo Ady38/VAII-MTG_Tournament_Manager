@@ -21,6 +21,10 @@
                 <?php if ($user->isLoggedIn() && $user->getIdentity()->user_id == $profileUser->user_id): ?>
                     <div class="mt-3">
                         <a class="btn btn-primary btn-sm home-primary-btn" href="<?= $link->url('User.edit') ?>">Edit profile</a>
+                        <!-- Admin-only user management button -->
+                        <?php if (isset($user) && $user->isLoggedIn() && ($user->getIdentity()->role_id ?? 0) == 1): ?>
+                            <a class="btn btn-warning btn-sm ms-2" href="<?= $link->url('Admin.users') ?>">User management</a>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
             </div>
