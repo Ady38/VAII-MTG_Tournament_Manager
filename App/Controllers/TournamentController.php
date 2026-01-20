@@ -1157,4 +1157,142 @@ class TournamentController extends BaseController
         }
         return $rankings;
     }
+
+    public function timerStatus(Request $request): Response
+    {
+        $tournamentId = (int)$request->get('tournament_id');
+        $round = $request->get('round');
+
+        $tournament = Tournament::getOne($tournamentId);
+        if (!$tournament) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Tournament not found.']);
+            exit;
+        }
+
+        $file = $this->getTimerFilePath($tournamentId);
+        if (!file_exists($file)) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true, 'active' => false]);
+            exit;
+        }
+
+        $raw = @file_get_contents($file);
+        if ($raw === false) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Unable to read timer file.']);
+            exit;
+        }
+
+        $data = json_decode($raw, true);
+        if (!is_array($data) || empty($data['end_time'])) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true, 'active' => false]);
+            exit;
+        }
+
+        $end = strtotime($data['end_time']);
+        $now = time();
+        $remaining = max(0, $end - $now);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'active' => ($remaining > 0),
+            'end_time' => $data['end_time'],
+            'remaining_seconds' => $remaining,
+            'round' => $data['round'] ?? null,
+            'started_by' => $data['started_by'] ?? null,
+        ]);
+        exit;
+    }
+
+    public function startTimer(Request $request): Response
+    {
+        // organizer/admin only
+        $user = $this->user->getIdentity();
+        if (!$user) {
+            header('Content-Type: application/json'); echo json_encode(['success'=>false,'message'=>'Not authenticated']); exit;
+        }
+
+        $tournamentId = (int)$request->post('tournament_id');
+        // Round can be omitted by the client; we'll compute a sensible default server-side if needed
+        $round = (int)$request->post('round');
+
+        $tournament = Tournament::getOne($tournamentId);
+        if (!$tournament) {
+            header('Content-Type: application/json'); echo json_encode(['success'=>false,'message'=>'Tournament not found']); exit;
+        }
+
+        // If round not provided or invalid, determine the most-recent round in the DB (fallback to 1)
+        if ($round <= 0) {
+            try {
+                $r = TournamentPlayer::executeRawSQL('SELECT MAX(round_number) AS maxr FROM match_ WHERE tournament_id = ?', [$tournamentId]);
+                $maxr = isset($r[0]['maxr']) ? (int)$r[0]['maxr'] : 0;
+                $round = ($maxr > 0) ? $maxr : 1;
+            } catch (\Exception $e) {
+                $round = 1;
+            }
+        }
+
+        $isAdmin = isset($user->role_id) && (int)$user->role_id === 1;
+        $isOrganizerOwner = isset($user->user_id) && ((int)$user->user_id === (int)$tournament->organizer_id);
+        if (!$isAdmin && !$isOrganizerOwner) {
+            header('Content-Type: application/json'); echo json_encode(['success'=>false,'message'=>'Only organizer may start the timer']); exit;
+        }
+
+        $durationMinutes = 50;
+        $endTime = date('c', time() + $durationMinutes * 60);
+        $data = [
+            'tournament_id' => $tournamentId,
+            'round' => $round,
+            'started_by' => $user->user_id ?? null,
+            'started_at' => date('c'),
+            'duration_minutes' => $durationMinutes,
+            'end_time' => $endTime,
+        ];
+
+        $file = $this->getTimerFilePath($tournamentId);
+        $dir = dirname($file);
+        if (!is_dir($dir)) @mkdir($dir, 0777, true);
+        $ok = @file_put_contents($file, json_encode($data));
+        if ($ok === false) {
+            header('Content-Type: application/json'); echo json_encode(['success'=>false,'message'=>'Failed to write timer file']); exit;
+        }
+
+        header('Content-Type: application/json'); echo json_encode(['success'=>true,'end_time'=>$endTime,'round'=>$round]); exit;
+    }
+
+    public function resetTimer(Request $request): Response
+    {
+        $user = $this->user->getIdentity();
+        if (!$user) {
+            header('Content-Type: application/json'); echo json_encode(['success'=>false,'message'=>'Not authenticated']); exit;
+        }
+
+        $tournamentId = (int)$request->post('tournament_id');
+        $tournament = Tournament::getOne($tournamentId);
+        if (!$tournament) {
+            header('Content-Type: application/json'); echo json_encode(['success'=>false,'message'=>'Tournament not found']); exit;
+        }
+
+        $isAdmin = isset($user->role_id) && (int)$user->role_id === 1;
+        $isOrganizerOwner = isset($user->user_id) && ((int)$user->user_id === (int)$tournament->organizer_id);
+        if (!$isAdmin && !$isOrganizerOwner) {
+            header('Content-Type: application/json'); echo json_encode(['success'=>false,'message'=>'Only organizer may reset the timer']); exit;
+        }
+
+        $file = $this->getTimerFilePath($tournamentId);
+        if (file_exists($file)) @unlink($file);
+
+        header('Content-Type: application/json'); echo json_encode(['success'=>true]); exit;
+    }
+
+    private function getTimerFilePath(int $tournamentId): string
+    {
+        // store timer state in project data directory: App/../data/timers/{id}.json
+        $base = realpath(__DIR__ . '/../../') ?: (__DIR__ . '/../../');
+        $dataDir = $base . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'timers';
+        return $dataDir . DIRECTORY_SEPARATOR . 'tournament_' . $tournamentId . '.json';
+    }
 }

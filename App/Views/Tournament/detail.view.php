@@ -160,6 +160,22 @@
                 <?php unset($_SESSION['pairing_success']); ?>
             <?php endif; ?>
 
+            <!-- Round Timer Panel -->
+            <div id="round-timer-panel" class="mb-3" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                <div style="font-weight:600;">Round timer:</div>
+                <div id="timer-display" style="font-size:1.2rem; min-width:120px;">Not running</div>
+
+                <?php if ($isOrganizer): ?>
+                    <div style="display:inline-flex; align-items:center; gap:8px;">
+                        <div id="timer-round-display" style="margin-right:6px;"><?php if ($selectedRound) echo 'Round ' . htmlspecialchars((string)$selectedRound); else echo 'Round: —'; ?></div>
+                        <button id="start-timer-btn" type="button" class="edit-modal-save">Start 50m</button>
+                        <button id="reset-timer-btn" type="button" class="btn btn-danger">Reset</button>
+                    </div>
+                <?php else: ?>
+                    <div class="text-muted">(Visible to all — only organizer can control)</div>
+                <?php endif; ?>
+            </div>
+
             <?php if ($isOrganizer): ?>
                 <form method="post" action="?c=Tournament&a=generatePairings" style="margin-bottom:12px; display:inline-block;">
                     <input type="hidden" name="tournament_id" value="<?= htmlspecialchars($tournament->tournament_id) ?>">
@@ -241,7 +257,7 @@
                                             <form method="post" action="?c=Tournament&a=saveMatchResult" class="result-form" data-match-id="<?= htmlspecialchars((string)$m['match_id']) ?>" style="display:inline-block; margin-left:8px;">
                                                 <input type="hidden" name="match_id" value="<?= htmlspecialchars((string)$m['match_id']) ?>">
                                                 <input type="hidden" name="tournament_id" value="<?= htmlspecialchars((string)$tournament->tournament_id) ?>">
-                                                <select name="result" class="result-select">
+                                                <select name="result" class="result-select" aria-label="Match result">
                                                     <?php
                                                         $opts = [
                                                             'unplayed' => 'Unplayed',
@@ -261,7 +277,7 @@
                                             </form>
                                         <?php else: ?>
                                             <!-- Not editable because it's BYE, not organizer, or a previous round; show disabled select for clarity -->
-                                            <select disabled class="result-select" style="margin-left:8px;">
+                                            <select disabled class="result-select" aria-label="Match result (read only)" style="margin-left:8px;">
                                                 <?php
                                                     // Use the same options but mark the current one selected and keep disabled
                                                     $opts = [
@@ -313,13 +329,17 @@
                             <tr class="tournament-row">
                                 <td><?= $i++ ?></td>
                                 <td><?= htmlspecialchars($row['username'] ?? '') ?></td>
-                                <td class="points-cell" data-user-id="<?= htmlspecialchars((string)$row['user_id']) ?>"><?= htmlspecialchars((string)round((float)($row['points'] ?? 0), 2)) ?></td>
+                                <?php $pointsText = number_format((float)($row['points'] ?? 0), 2, '.', ''); ?>
+                                <td class="points-cell" data-user-id="<?= htmlspecialchars((string)$row['user_id']) ?>"><?= htmlspecialchars($pointsText) ?></td>
                                 <?php
                                     // format tiebreakers as percentage strings, fallback to '-' when not available
-                                    $fmt = function($v){ return ($v === null || $v === '') ? '-' : number_format((float)$v * 100, 2) . '%'; };
+                                    $gwpVal = $row['gwp'] ?? null;
+                                    $gwpText = ($gwpVal === null || $gwpVal === '') ? '-' : number_format((float)$gwpVal * 100, 2) . '%';
+                                    $ogwpVal = $row['ogwp'] ?? null;
+                                    $ogwpText = ($ogwpVal === null || $ogwpVal === '') ? '-' : number_format((float)$ogwpVal * 100, 2) . '%';
                                 ?>
-                                <td class="gwp-cell" data-user-id="<?= htmlspecialchars((string)$row['user_id']) ?>"><?= htmlspecialchars($fmt($row['gwp'] ?? null)) ?></td>
-                                <td class="ogwp-cell" data-user-id="<?= htmlspecialchars((string)$row['user_id']) ?>"><?= htmlspecialchars($fmt($row['ogwp'] ?? null)) ?></td>
+                                <td class="gwp-cell" data-user-id="<?= htmlspecialchars((string)$row['user_id']) ?>"><?= htmlspecialchars($gwpText) ?></td>
+                                <td class="ogwp-cell" data-user-id="<?= htmlspecialchars((string)$row['user_id']) ?>"><?= htmlspecialchars($ogwpText) ?></td>
                                 <?php $comm = $commanders[$row['user_id']] ?? ''; ?>
                                 <td class="commander-cell">
                                     <?php if ($comm): ?>
@@ -338,171 +358,12 @@
     <?php endif; ?>
 </div>
 
-<script src="<?= $link->asset('js/tournament_sign_up_btn.js') ?>"></script>
-<script src="<?= $link->asset('js/scryfall_commander_tooltip.js') ?>"></script>
-
 <script>
-// Small tab switching behavior to keep UI interactive
-document.querySelectorAll('.tournament-tab-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){
-        var tab = btn.getAttribute('data-tab');
-        document.querySelectorAll('.tournament-tab-btn').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('.tournament-tab-content').forEach(function(c){
-            c.style.display = c.id === 'tab-'+tab ? '' : 'none';
-        });
-    });
-});
-
-// Helper: rebuild the standings table body from server-sent rankings and commanders
-function updateStandings(rankings, commanders) {
-    try {
-        var tbody = document.querySelector('#tab-standings .table-responsive table.tournament-table tbody');
-        if (!tbody) return;
-        // Clear existing rows
-        while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
-
-        var fmtPercent = function(v){
-            if (v === null || v === undefined || v === '') return '-';
-            var num = Number(v);
-            if (isNaN(num)) return '-';
-            return (num * 100).toFixed(2) + '%';
-        };
-
-        for (var i = 0; i < rankings.length; i++) {
-            var r = rankings[i];
-            var tr = document.createElement('tr'); tr.className = 'tournament-row';
-
-            // #
-            var tdIdx = document.createElement('td'); tdIdx.textContent = (i+1).toString(); tr.appendChild(tdIdx);
-
-            // Player
-            var tdPlayer = document.createElement('td'); tdPlayer.textContent = r.username || r.user_id; tr.appendChild(tdPlayer);
-
-            // Points
-            var tdPoints = document.createElement('td'); tdPoints.className = 'points-cell'; tdPoints.setAttribute('data-user-id', String(r.user_id));
-            tdPoints.textContent = (typeof r.points !== 'undefined' && r.points !== null) ? Number(r.points).toFixed(2) : '0.00';
-            tr.appendChild(tdPoints);
-
-            // GWP
-            var tdGwp = document.createElement('td'); tdGwp.className = 'gwp-cell'; tdGwp.setAttribute('data-user-id', String(r.user_id));
-            tdGwp.textContent = fmtPercent(r.gwp);
-            tr.appendChild(tdGwp);
-
-            // OGWP
-            var tdOgwp = document.createElement('td'); tdOgwp.className = 'ogwp-cell'; tdOgwp.setAttribute('data-user-id', String(r.user_id));
-            tdOgwp.textContent = fmtPercent(r.ogwp);
-            tr.appendChild(tdOgwp);
-
-            // Commander
-            var tdComm = document.createElement('td'); tdComm.className = 'commander-cell';
-            var comm = (commanders && commanders[String(r.user_id)]) ? commanders[String(r.user_id)] : '';
-            if (comm) {
-                var span = document.createElement('span'); span.className = 'commander-link'; span.setAttribute('data-card-name', comm); span.textContent = comm;
-                tdComm.appendChild(span);
-            }
-            tr.appendChild(tdComm);
-
-            tbody.appendChild(tr);
-        }
-    } catch (e) {
-        console.error('updateStandings error', e);
-    }
-}
-
-// AJAX result save: send result via fetch and update UI
-document.addEventListener('DOMContentLoaded', function(){
-    // Attach handler to each result form
-    document.querySelectorAll('.result-form').forEach(function(form){
-        var select = form.querySelector('.result-select');
-        if (!select) return;
-        // Prefer explicit attribute so we don't rely on dataset normalization
-        var matchId = form.getAttribute('data-match-id') || form.dataset.matchId || '';
-
-        select.addEventListener('change', function(e){
-            var fd = new FormData(form);
-            fd.append('ajax', '1');
-            // disable while saving
-            select.disabled = true;
-
-            var url = form.getAttribute('action') || form.action;
-
-            fetch(url, {
-                method: 'POST',
-                body: fd,
-                credentials: 'same-origin',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(function(resp){
-                if (!resp.ok) {
-                    return resp.text().then(function(text){
-                        throw new Error('Server returned HTTP ' + resp.status + '. First 200 chars: ' + text.substring(0,200));
-                    });
-                }
-                // If server returned a JSON response, parse it. Otherwise read text and fail with a helpful error.
-                var ct = resp.headers.get('content-type') || '';
-                if (ct.indexOf('application/json') !== -1) {
-                    return resp.json();
-                }
-                return resp.text().then(function(text){
-                    throw new Error('Server returned non-JSON response. First 200 chars: ' + text.substring(0,200));
-                });
-            })
-            .then(function(json){
-                if (json && json.success) {
-                    // update result label for this match
-                    var lbl = document.querySelector('.result-label[data-match-id="' + matchId + '"]');
-                    if (lbl) {
-                        // if server returned canonical result token, map friendly label, otherwise fall back to select text
-                        if (json.result === 'unplayed') {
-                            lbl.textContent = 'Unplayed';
-                        } else if (json.result === 'draw') {
-                            lbl.textContent = 'Draw (1-1)';
-                        } else if (json.result) {
-                            // use the select option's visible text (already localized)
-                            lbl.textContent = select.options[select.selectedIndex].text;
-                        } else {
-                            lbl.textContent = select.options[select.selectedIndex].text;
-                        }
-                        // brief visual feedback: add success class and remove after 700ms
-                        lbl.classList.add('result-saved');
-                        setTimeout(function(){ lbl.classList.remove('result-saved'); }, 700);
-                    }
-
-                    // update points cells if provided
-                    if (json.points) {
-                        Object.keys(json.points).forEach(function(uid){
-                            var cell = document.querySelector('.points-cell[data-user-id="' + uid + '"]');
-                            if (cell) {
-                                cell.textContent = json.points[uid];
-                            }
-                        });
-                    }
-
-                    // If server returned full rankings data, update the standings table live
-                    if (json.rankings) {
-                        updateStandings(json.rankings, json.commanders || {});
-                    }
-
-                    // Re-enable the select so the organizer can change the result again immediately
-                    select.disabled = false;
-                } else {
-                    // handle known error cases
-                    var err = json && json.error ? json.error : 'Unknown error';
-                    var lbl = document.querySelector('.result-label[data-match-id="' + matchId + '"]');
-                    if (lbl) lbl.textContent = 'Error: ' + err;
-                }
-            })
-            .catch(function(err){
-                console.error('Fetch error:', err);
-                // Re-enable select element if there was an error
-                select.disabled = false;
-                alert('Error saving result: ' + err.message);
-            });
-        });
-    });
-});
+    // Configuration for external tournament JS
+    window.TOURNAMENT_DETAIL_CONFIG = window.TOURNAMENT_DETAIL_CONFIG || {};
+    window.TOURNAMENT_DETAIL_CONFIG.tournamentId = <?= (int)$tournament->tournament_id ?>;
+    window.TOURNAMENT_DETAIL_CONFIG.selectedRound = <?= $selectedRound ? (int)$selectedRound : 0 ?>;
+    window.TOURNAMENT_DETAIL_CONFIG.timerPollInterval = 5000;
 </script>
+<script src="<?= $link->asset('js/tournament_detail.js') ?>"></script>
+<script src="<?= $link->asset('js/tournament_timer.js') ?>"></script>
