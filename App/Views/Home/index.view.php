@@ -45,7 +45,7 @@
                     <a class="btn btn-primary btn-lg me-2 home-primary-btn"
                        href="<?= $link->url('Tournament.index') ?>">View Tournaments</a>
                     <a class="btn btn-outline-secondary btn-lg home-primary-btn"
-                       href="<?= $link->url('Auth.login') ?>">Admin Login</a>
+                       href="<?= $link->url('Auth.login') ?>">Login</a>
                 </div>
             </div>
         </div>

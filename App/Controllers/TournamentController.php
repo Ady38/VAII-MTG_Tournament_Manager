@@ -90,8 +90,11 @@ class TournamentController extends BaseController
             $tournament->end_date = $request->post('end_date');
             $tournament->status = trim($request->post('status'));
 
-            // Bude treba nahradit skutecnym organizatorom z prihlaseneho uzivatela
-            $tournament->organizer_id = 1;
+            // If this is a new tournament (no id yet), assign current user as organizer
+            if (empty($tournament->tournament_id)) {
+                $identity = $this->user->getIdentity();
+                $tournament->organizer_id = $identity ? $identity->user_id : null;
+            }
 
             if (!$tournament->name) {
                 $errors[] = 'Name is required.';
@@ -119,6 +122,13 @@ class TournamentController extends BaseController
 
     public function add(Request $request): Response
     {
+        // Only organizers (role_id == 2) and admins (role_id == 1) can create tournaments
+        $identity = $this->user->getIdentity();
+        if (!$identity || !in_array((int)$identity->role_id, [1, 2], true)) {
+            $this->app->getSession()->set('flash_error', 'Only organizers may create tournaments.');
+            return $this->redirect('?c=Tournament&a=index');
+        }
+
         $tournament = new Tournament();
         $result = $this->processTournamentForm($tournament, $request);
         if (!empty($result['redirect'])) {
@@ -153,6 +163,15 @@ class TournamentController extends BaseController
             return $this->redirect('?c=Tournament&a=index');
         }
 
+        // Authorization: only admins or the organizer can edit
+        $identity = $this->user->getIdentity();
+        $isAdmin = $identity && isset($identity->role_id) && (int)$identity->role_id === 1;
+        $isOrganizerOwner = $identity && isset($identity->user_id) && ((int)$identity->user_id === (int)$tournament->organizer_id);
+        if (!$isAdmin && !$isOrganizerOwner) {
+            $this->app->getSession()->set('flash_error', 'You are not allowed to edit this tournament.');
+            return $this->redirect('?c=Tournament&a=index');
+        }
+
         $result = $this->processTournamentForm($tournament, $request);
         if (!empty($result['redirect'])) {
             return $this->redirect('?c=Tournament&a=index');
@@ -165,7 +184,15 @@ class TournamentController extends BaseController
         $id = $request->get('id');
         $tournament = Tournament::getOne($id);
         if ($tournament) {
-            $tournament->delete();
+            // Authorization: only admins or the organizer can delete
+            $identity = $this->user->getIdentity();
+            $isAdmin = $identity && isset($identity->role_id) && (int)$identity->role_id === 1;
+            $isOrganizerOwner = $identity && isset($identity->user_id) && ((int)$identity->user_id === (int)$tournament->organizer_id);
+            if ($isAdmin || $isOrganizerOwner) {
+                $tournament->delete();
+            } else {
+                $this->app->getSession()->set('flash_error', 'You are not allowed to delete this tournament.');
+            }
         }
         return $this->redirect('?c=Tournament&a=index');
     }

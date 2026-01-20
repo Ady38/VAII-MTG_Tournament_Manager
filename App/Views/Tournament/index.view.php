@@ -69,13 +69,18 @@ if (!empty($_SESSION['add_errors'])) {
             </div>
         </div>
     </form>
-    <?php if ($user->isLoggedIn()): ?>
+    <?php
+    // Determine current user's identity and permissions for tournament creation
+    $identity = $user->getIdentity();
+    $canCreateTournament = ($identity && isset($identity->role_id) && in_array((int)$identity->role_id, [1,2], true));
+    ?>
+    <?php if ($canCreateTournament): ?>
         <button id="openAddModal" class="filters-button tournament-create-btn"
                 type="button" title="Add tournament">Create tournament</button>
     <?php endif; ?>
 </div>
 
-<?php if ($user->isLoggedIn()): ?>
+<?php if ($user->isLoggedIn() && $canCreateTournament): ?>
 <!-- Add Tournament Modal -->
 <div id="addModal" class="edit-modal-overlay">
     <div class="edit-modal-content">
@@ -188,6 +193,13 @@ if (!empty($_SESSION['add_errors'])) {
         </thead>
         <tbody>
             <?php foreach ($tournaments as $tournament): ?>
+                <?php
+                // compute per-row permissions: allow edit/delete if current user is admin or organizer of this tournament
+                $identity = $user->getIdentity();
+                $isAdmin = ($identity && isset($identity->role_id) && (int)$identity->role_id === 1);
+                $isOrganizerOwner = ($identity && isset($identity->user_id) && ((int)$identity->user_id === (int)$tournament->organizer_id));
+                $canManage = $isAdmin || $isOrganizerOwner;
+                ?>
                 <tr class="tournament-row">
                     <td><?= htmlspecialchars($tournament->name) ?></td>
                     <td><?= htmlspecialchars($tournament->location) ?></td>
@@ -195,7 +207,7 @@ if (!empty($_SESSION['add_errors'])) {
                     <td><?= htmlspecialchars($tournament->end_date) ?></td>
                     <td><?= htmlspecialchars($tournament->status) ?></td>
                     <td>
-                        <?php if ($user->isLoggedIn()): ?>
+                        <?php if ($canManage): ?>
                             <a href="#" class="edit-link tournament-action-edit"
                                data-id="<?= $tournament->tournament_id ?>"
                                data-name="<?= htmlspecialchars($tournament->name, ENT_QUOTES) ?>"
