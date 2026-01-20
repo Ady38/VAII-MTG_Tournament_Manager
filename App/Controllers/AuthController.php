@@ -52,7 +52,7 @@ class AuthController extends BaseController
             if ($user) {
                 // Store identity object in session for framework
                 $this->app->getSession()->set(\App\Configuration::IDENTITY_SESSION_KEY, $user);
-                return $this->redirect($this->url("admin.index"));
+                return $this->redirect($this->url("home.index"));
             } else {
                 $logged = false;
             }
@@ -108,15 +108,28 @@ class AuthController extends BaseController
     /**
      * Logs out the current user.
      *
-     * This action terminates the user's session and redirects them to a view. It effectively clears any authentication
-     * tokens or session data associated with the user.
+     * This action terminates the user's session and redirects them to the home page.
+     * It clears any authentication tokens or session data associated with the user.
      *
-     * @return ViewResponse The response object that renders the logout view.
+     * @return Response The redirect response to the home page.
      */
     public function logout(Request $request): Response
     {
-        $this->app->getAuthenticator()->logout();
-        return $this->html();
+        // If an authenticator is configured, use it to logout (it may destroy the session)
+        $auth = $this->app->getAuthenticator();
+        if ($auth !== null) {
+            try {
+                $auth->logout();
+            } catch (\Throwable $e) {
+                // Fallback: ensure identity session key is cleared
+                $this->app->getSession()->set(\App\Configuration::IDENTITY_SESSION_KEY, null);
+            }
+        } else {
+            // No authenticator: clear the stored identity directly
+            $this->app->getSession()->set(\App\Configuration::IDENTITY_SESSION_KEY, null);
+        }
+
+        // Redirect to home page after logout
+        return $this->redirect($this->url('Home.index'));
     }
 }
-
