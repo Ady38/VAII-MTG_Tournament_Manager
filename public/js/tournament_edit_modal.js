@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let startDateInput = document.getElementById('edit_start_date');
     let endDateInput = document.getElementById('edit_end_date');
     let statusSelect = document.getElementById('edit_status');
+    let editForm = document.getElementById('editTournamentForm');
 
     // open/close helpers
     function openModal() { modal.style.display = 'flex'; }
@@ -43,6 +44,28 @@ document.addEventListener('DOMContentLoaded', function () {
             openModal();
         });
     });
+
+    // client-side validation before submit
+    if (editForm) {
+        editForm.addEventListener('submit', function (e) {
+            const name = nameInput?.value?.trim() || '';
+            const start = startDateInput?.value || '';
+            const end = endDateInput?.value || '';
+            const status = statusSelect?.value || '';
+            const errors = [];
+            if (name === '') errors.push('Name is required.');
+            if (start === '') errors.push('Start date is required.');
+            if (end === '') errors.push('End date is required.');
+            if (start !== '' && end !== '' && (new Date(start) > new Date(end))) errors.push('End date must be same or later than start date.');
+            if (status === '') errors.push('Status is required.');
+            if (errors.length > 0) {
+                e.preventDefault();
+                alert(errors.join('\n'));
+                return false;
+            }
+            return true;
+        });
+    }
 
     // close handlers
     closeBtn.addEventListener('click', closeModal);

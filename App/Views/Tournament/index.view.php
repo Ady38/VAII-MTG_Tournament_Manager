@@ -140,7 +140,7 @@ if (!empty($_SESSION['add_errors'])) {
 
             <div class="edit-modal-field">
                 <label for="edit_name" class="edit-modal-label">Name</label>
-                <input type="text" name="name" id="edit_name" class="edit-modal-input">
+                <input type="text" name="name" id="edit_name" class="edit-modal-input" required>
             </div>
 
             <div class="edit-modal-field">
@@ -152,18 +152,18 @@ if (!empty($_SESSION['add_errors'])) {
                 <div>
                     <label for="edit_start_date" class="edit-modal-label">Start date &amp; time</label>
                     <input type="datetime-local" name="start_date" id="edit_start_date"
-                        class="edit-modal-input edit-modal-input-date">
+                        class="edit-modal-input edit-modal-input-date" required>
                 </div>
                 <div>
                     <label for="edit_end_date" class="edit-modal-label">End date &amp; time</label>
                     <input type="datetime-local" name="end_date" id="edit_end_date"
-                        class="edit-modal-input edit-modal-input-date">
+                        class="edit-modal-input edit-modal-input-date" required>
                 </div>
             </div>
 
             <div class="edit-modal-field">
                 <label for="edit_status" class="edit-modal-label">Status</label>
-                <select name="status" id="edit_status" class="edit-modal-select">
+                <select name="status" id="edit_status" class="edit-modal-select" required>
                     <option value="planned">Planned</option>
                     <option value="ongoing">Ongoing</option>
                     <option value="finished">Finished</option>

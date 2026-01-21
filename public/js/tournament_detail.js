@@ -139,10 +139,39 @@
         });
     }
 
+    // Client-side deck upload validation
+    function initDeckUploadValidation(){
+        var fileInput = document.getElementById('decklist');
+        if (!fileInput) return;
+        var form = fileInput.closest('form');
+        if (!form) return;
+
+        form.addEventListener('submit', function(e){
+            var f = fileInput.files && fileInput.files[0];
+            if (!f) return true; // allow empty (server will handle)
+            var name = f.name || '';
+            var ext = name.split('.').pop().toLowerCase();
+            if (ext !== 'txt') {
+                e.preventDefault();
+                alert('Only .txt files are accepted for decklists.');
+                return false;
+            }
+            // limit file size to 200KB to be safe client-side
+            var maxBytes = 200 * 1024;
+            if (f.size > maxBytes) {
+                e.preventDefault();
+                alert('Decklist file is too large (max 200KB).');
+                return false;
+            }
+            return true;
+        });
+    }
+
     // Public init
     function init(){
         initTabs();
         initResultForms();
+        initDeckUploadValidation();
         // expose updateStandings so timer/result code can call it
         window.TOURNAMENT_updateStandings = updateStandings;
     }

@@ -41,7 +41,7 @@
                                     <input type="hidden" name="username" value="<?= htmlspecialchars($u->username) ?>">
                                     <input type="hidden" name="email" value="<?= htmlspecialchars($u->email) ?>">
 
-                                    <select name="role_id" class="edit-modal-select">
+                                    <select name="role_id" class="edit-modal-select" required aria-label="Role">
                                         <?php foreach ($roles as $rid => $rname): ?>
                                             <option value="<?= htmlspecialchars($rid) ?>" <?= ($u->role_id == $rid) ? 'selected' : '' ?>><?= htmlspecialchars($rname) ?></option>
                                         <?php endforeach; ?>

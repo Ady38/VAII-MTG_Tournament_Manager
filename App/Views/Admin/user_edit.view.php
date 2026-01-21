@@ -31,11 +31,11 @@
                     <tr class="tournament-row">
                         <td style="vertical-align:middle; text-align:left; width:32%;">
                             <label class="visually-hidden" for="username_input">Username</label>
-                            <input id="username_input" type="text" name="username" class="edit-modal-input" value="<?= htmlspecialchars($editUser->username) ?>">
+                            <input id="username_input" type="text" name="username" class="edit-modal-input" value="<?= htmlspecialchars($editUser->username) ?>" required>
                         </td>
                         <td style="vertical-align:middle; text-align:left; width:46%;">
                             <label class="visually-hidden" for="email_input">Email</label>
-                            <input id="email_input" type="email" name="email" class="edit-modal-input" value="<?= htmlspecialchars($editUser->email) ?>">
+                            <input id="email_input" type="email" name="email" class="edit-modal-input" value="<?= htmlspecialchars($editUser->email) ?>" required>
                         </td>
                         <td style="vertical-align:middle; text-align:center; width:12%;">
                             <label class="visually-hidden" for="role_input">Role</label>

@@ -56,12 +56,17 @@ class AdminController extends BaseController
         $id = $request->post('user_id'); $user = User::getOne($id); if (!$user) return $this->redirect($this->url('Admin.users'));
 
         $errors = [];
-        $role_id = $request->post('role_id');
+        $role_id = (int)$request->post('role_id');
         $email = trim((string)$request->post('email'));
         $username = trim((string)$request->post('username'));
 
         if ($username === '') $errors[] = 'Username is required.';
         if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Valid email is required.';
+
+        // ensure role is valid
+        if (!in_array($role_id, [1, 2, 3], true)) {
+            $errors[] = 'Invalid role selected.';
+        }
 
         // uniqueness checks
         $existing = User::findOne(['username' => $username]);
@@ -72,7 +77,7 @@ class AdminController extends BaseController
         if (empty($errors)) {
             $user->username = $username;
             $user->email = $email;
-            $user->role_id = (int)$role_id;
+            $user->role_id = $role_id;
             try {
                 $user->save();
                 $this->app->getSession()->set('flash_success', 'User updated successfully.');
