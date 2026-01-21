@@ -1,3 +1,4 @@
+/*Vytvorene s pomocou GitHub Copilot*/
 // tournament_detail_loader.js
 // Reads JSON config from hidden div and sets window.TOURNAMENT_DETAIL_CONFIG for other scripts to use
 (function(){

@@ -1,3 +1,4 @@
+/*Vytvorene s pomocou GitHub Copilot*/
 // tournament_index_loader.js
 // Move inline modal logic from Tournament index view to external file
 document.addEventListener('DOMContentLoaded', function(){
