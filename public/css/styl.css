@@ -612,6 +612,18 @@ table.responsive {
     color: #FFD700;
 }
 
+/* Ensure the Status column (5th column) in the index table is not clipped:
+   allow wrapping, give it more minimum width and prefer visible overflow so
+   dropdowns/popups are not clipped. This targets only the main index table. */
+table#tournamentTable.tournament-table th:nth-child(5),
+table#tournamentTable.tournament-table td:nth-child(5) {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    width: 12% !important;      /* give the status column a bit more room */
+    min-width: 110px !important; /* prevent it from becoming too narrow */
+}
+
 /* Enforced visibility of borders for tournament tables */
 .tournament-table,
 #tournamentTable {
@@ -791,3 +803,87 @@ input[type="password"]:-webkit-autofill {
     background-color: #070707 !important;
     color: #EAEAEA !important;
 }
+
+/* Specific rules for users table to avoid clipping and keep dropdowns visible */
+.tournament-table.users-table { table-layout: auto; }
+.tournament-table.users-table th, .tournament-table.users-table td {
+    white-space: normal; /* allow wrapping */
+    overflow: visible; /* don't clip dropdowns */
+}
+.tournament-table.users-table td { vertical-align: middle; }
+
+/* Make inline role form controls roomy and ensure dropdown is above other elements */
+.tournament-table.users-table .inline-role-form { display: inline-flex; gap:8px; align-items:center; flex-wrap:nowrap; }
+.tournament-table.users-table select { min-width:80px; max-width:100px; z-index:2000; position:relative; box-sizing:border-box; padding:4px 6px; font-size:0.95rem; }
+.tournament-table.users-table .edit-modal-save { white-space:nowrap; }
+
+/* Make save button compact so it fits next to select on desktop */
+.tournament-table.users-table .inline-role-form .edit-modal-save,
+.tournament-table.users-table .inline-role-form button {
+    padding:6px 8px;
+    font-size:0.9rem;
+    line-height:1;
+}
+
+/* Ensure the action cell has enough space to avoid forcing the role cell too narrow */
+.tournament-table.users-table th:nth-child(3), .tournament-table.users-table td:nth-child(3) {
+    /* make role column wider on desktop so select + Save fit on one line */
+    min-width: 220px;
+}
+
+/* Small-screen adjustments specifically for users table */
+@media (max-width: 760px) {
+    .tournament-table.users-table th:nth-child(1), .tournament-table.users-table td:nth-child(1) { width: 45%; }
+    .tournament-table.users-table th:nth-child(2), .tournament-table.users-table td:nth-child(2) { width: 35%; }
+    .tournament-table.users-table th:nth-child(3), .tournament-table.users-table td:nth-child(3) { width: 12%; }
+    .tournament-table.users-table th:nth-child(4), .tournament-table.users-table td:nth-child(4) { width: 8%; }
+    .tournament-table.users-table select { min-width:110px; max-width:180px; }
+    .tournament-table.users-table .inline-role-form { flex-wrap:wrap; }
+}
+
+/* Fix for delete button clipping in users table */
+.tournament-table.users-table th:last-child,
+.tournament-table.users-table td:last-child {
+    /* keep the intended small width but ensure a sensible minimum */
+    width: 8%;
+    min-width: 140px; /* increased to give action buttons more room on desktop */
+}
+
+.tournament-table.users-table td .btn {
+    /* Prevent button text from wrapping and make it render above other elements */
+    white-space: nowrap;
+    min-width: 56px;
+    z-index: 2200;
+    position: relative;
+    display: inline-block;
+    padding: 6px 10px; /* compact padding but enough for tap */
+    box-sizing: border-box;
+    font-size: 0.9rem;
+}
+
+/* Ensure the actions cell contents are centered without causing overflow */
+.tournament-table.users-table td:last-child { text-align: center; vertical-align: middle; }
+
+@media (max-width: 760px) {
+    .tournament-table.users-table th:last-child,
+    .tournament-table.users-table td:last-child { min-width: 80px; }
+    .tournament-table.users-table td .btn { display: inline-block; padding: 6px 8px; }
+}
+
+/* Users table: ensure emails are not clipped and wrap at sensible points (allow break at @) */
+.tournament-table.users-table td.email-cell {
+    white-space: normal !important; /* allow wrapping */
+    overflow: visible !important; /* don't clip popup/dropdown */
+    overflow-wrap: anywhere; /* allow breaks anywhere if needed */
+    word-break: normal; /* let UA decide better break points */
+    max-width: none;
+}
+
+/* Prefer to break emails at the @ symbol when wrapping */
+.tournament-table.users-table td.email-cell {
+    /* We inject a zero-width-space before @ in the server-side helper, so browsers can break at that boundary. */
+}
+
+/* Make sure domain remains visible by allowing wrapping earlier in the local part */
+.tournament-table.users-table td.email-cell a,
+.tournament-table.users-table td.email-cell span { display: inline; }

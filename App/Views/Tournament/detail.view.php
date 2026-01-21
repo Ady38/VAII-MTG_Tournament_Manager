@@ -361,12 +361,17 @@
     <?php endif; ?>
 </div>
 
-<script>
-    // Configuration for external tournament JS
-    window.TOURNAMENT_DETAIL_CONFIG = window.TOURNAMENT_DETAIL_CONFIG || {};
-    window.TOURNAMENT_DETAIL_CONFIG.tournamentId = <?= (int)$tournament->tournament_id ?>;
-    window.TOURNAMENT_DETAIL_CONFIG.selectedRound = <?= $selectedRound ? (int)$selectedRound : 0 ?>;
-    window.TOURNAMENT_DETAIL_CONFIG.timerPollInterval = 5000;
-</script>
+<?php
+// Pass config via hidden div to avoid inline scripts
+$cfg = [
+    'tournamentId' => (int)$tournament->tournament_id,
+    'selectedRound' => $selectedRound ? (int)$selectedRound : 0,
+    'timerPollInterval' => 5000,
+];
+echo '<div id="tournament-detail-config" data-config="' . htmlspecialchars(json_encode($cfg), ENT_QUOTES, 'UTF-8') . '" style="display:none"></div>';
+?>
+
+<script src="<?= $link->asset('js/tournament_detail_loader.js') ?>"></script>
+<script src="<?= $link->asset('js/scryfall_commander_tooltip.js') ?>"></script>
 <script src="<?= $link->asset('js/tournament_detail.js') ?>"></script>
 <script src="<?= $link->asset('js/tournament_timer.js') ?>"></script>

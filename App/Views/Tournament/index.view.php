@@ -21,9 +21,8 @@ if (!empty($_SESSION['add_form_data'])) {
 }
 
 if (!empty($_SESSION['add_errors'])) {
-    echo '<script>window.addModalErrors = ' .
-        json_encode(array_map('htmlspecialchars', $_SESSION['add_errors'])) .
-        ';</script>';
+    $errorsJson = json_encode(array_map('htmlspecialchars', $_SESSION['add_errors']));
+    echo '<div id="add-modal-errors" data-errors="' . htmlspecialchars($errorsJson, ENT_QUOTES, 'UTF-8') . '" style="display:none"></div>';
     unset($_SESSION['add_errors']);
 }
 ?>
@@ -239,4 +238,4 @@ if (!empty($_SESSION['add_errors'])) {
     </table>
 </div>
 
-<?php ?>
+<?php echo '<script src="' . $link->asset('js/tournament_index_loader.js') . '"></script>'; ?>

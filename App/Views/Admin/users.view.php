@@ -8,6 +8,23 @@
 /** @var \Framework\Auth\AppUser $user */
 ?>
 
+<?php
+// helper: render email with a break opportunity before the '@' (zero-width space)
+if (!function_exists('emailWithBreakBeforeAt')) {
+    function emailWithBreakBeforeAt($email) {
+        $email = (string)$email;
+        $parts = explode('@', $email, 2);
+        if (count($parts) === 2) {
+            $local = htmlspecialchars($parts[0], ENT_QUOTES, 'UTF-8');
+            $domain = htmlspecialchars($parts[1], ENT_QUOTES, 'UTF-8');
+            // insert zero-width space before @ so browsers can break there if needed
+            return $local . '&#8203;@' . $domain;
+        }
+        return htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+    }
+}
+?>
+
 <div class="tournament-tabs-frame">
     <h4 style="color:#EAEAEA; margin-top:0; margin-bottom:12px;">User management</h4>
 
@@ -24,36 +41,36 @@
         <?php if (empty($users)): ?>
             <p>No users found.</p>
         <?php else: ?>
-            <table class="tournament-table" aria-label="Users table">
+            <table class="tournament-table users-table" aria-label="Users table">
                 <thead>
                     <tr>
-                        <th style="width:32%">Username</th>
-                        <th style="width:46%">Email</th>
+                        <th style="width:45%">Username</th>
+                        <th style="width:35%">Email</th>
                         <th style="width:12%">Role</th>
-                        <th style="width:10%">Actions</th>
+                        <th style="width:8%">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($users as $u): ?>
-                        <tr class="tournament-row">
-                            <td style="vertical-align:middle; text-align:left; width:32%;"><?= htmlspecialchars($u->username) ?></td>
-                            <td style="vertical-align:middle; text-align:left; width:46%;"><?= htmlspecialchars($u->email) ?></td>
+                     <?php foreach ($users as $u): ?>
+                         <tr class="tournament-row">
+                            <td style="vertical-align:middle; text-align:left; width:45%;"><?= htmlspecialchars($u->username) ?></td>
+                            <td class="email-cell" style="vertical-align:middle; text-align:left; width:35%;" title="<?= htmlspecialchars($u->email, ENT_QUOTES, 'UTF-8') ?>"><?= emailWithBreakBeforeAt($u->email) ?></td>
                             <td style="vertical-align:middle; text-align:center; width:12%;">
-                                <form method="post" action="<?= $link->url('Admin.updateUser') ?>" style="display:inline-flex; gap:8px; align-items:center;">
-                                    <input type="hidden" name="user_id" value="<?= htmlspecialchars($u->user_id) ?>">
-                                    <input type="hidden" name="username" value="<?= htmlspecialchars($u->username) ?>">
-                                    <input type="hidden" name="email" value="<?= htmlspecialchars($u->email) ?>">
+                                <form method="post" action="<?= $link->url('Admin.updateUser') ?>" class="inline-role-form" style="display:inline-flex; gap:8px; align-items:center;">
+                                     <input type="hidden" name="user_id" value="<?= htmlspecialchars($u->user_id) ?>">
+                                     <input type="hidden" name="username" value="<?= htmlspecialchars($u->username) ?>">
+                                     <input type="hidden" name="email" value="<?= htmlspecialchars($u->email) ?>">
 
-                                    <select name="role_id" class="edit-modal-select" required aria-label="Role">
-                                        <?php foreach ($roles as $rid => $rname): ?>
-                                            <option value="<?= htmlspecialchars($rid) ?>" <?= ($u->role_id == $rid) ? 'selected' : '' ?>><?= htmlspecialchars($rname) ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
+                                     <select name="role_id" class="edit-modal-select" required aria-label="Role">
+                                         <?php foreach ($roles as $rid => $rname): ?>
+                                             <option value="<?= htmlspecialchars($rid) ?>" <?= ($u->role_id == $rid) ? 'selected' : '' ?>><?= htmlspecialchars($rname) ?></option>
+                                         <?php endforeach; ?>
+                                     </select>
 
-                                    <button type="submit" class="edit-modal-save">Save</button>
-                                </form>
-                            </td>
-                            <td style="text-align:center; vertical-align:middle; width:10%;">
+                                     <button type="submit" class="edit-modal-save">Save</button>
+                                 </form>
+                             </td>
+                            <td style="text-align:center; vertical-align:middle; width:8%;">
                                 <?php if ($user->isLoggedIn() && $user->getIdentity()->user_id != $u->user_id): ?>
                                     <form method="post" action="<?= $link->url('Admin.deleteUser') ?>" style="display:inline-block;">
                                         <input type="hidden" name="user_id" value="<?= htmlspecialchars($u->user_id) ?>">
@@ -68,5 +85,3 @@
         <?php endif; ?>
     </div>
 </div>
-
-<a class="btn btn-secondary" href="<?= $link->url('Admin.index') ?>">Back</a>
