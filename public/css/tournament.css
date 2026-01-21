@@ -1,5 +1,0 @@
-/* tournament.css was migrated into styl.css to consolidate styles.
-   This shim keeps backward compatibility; you can remove this file and update templates to reference styl.css directly.
-*/
-@import url('styl.css');
-

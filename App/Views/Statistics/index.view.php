@@ -35,5 +35,3 @@
         </table>
     </div>
 <?php endif; ?>
-
-<script src="<?= $link->asset('js/scryfall_commander_tooltip.js') ?>"></script>
