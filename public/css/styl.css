@@ -788,8 +788,8 @@ select:-webkit-autofill,
 input:-webkit-autofill:focus,
 textarea:-webkit-autofill:focus,
 select:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0px 1000px #070707 inset !important; /* fill with themed dark background */
-    box-shadow: 0 0 0px 1000px #070707 inset !important;
+    -webkit-box-shadow: 0 0 0 1000px #070707 inset !important; /* fill with themed dark background */
+    box-shadow: 0 0 0 1000px #070707 inset !important;
     -webkit-text-fill-color: #EAEAEA !important; /* keep light text */
     border-color: #d4af37 !important;
 }
@@ -843,8 +843,8 @@ input[type="password"]:-webkit-autofill {
 .home-next-tournament-card input:-webkit-autofill,
 .home-next-tournament-card textarea:-webkit-autofill,
 .home-next-tournament-card select:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0px 1000px #070707 inset !important;
-    box-shadow: 0 0 0px 1000px #070707 inset !important;
+    -webkit-box-shadow: 0 0 0 1000px #070707 inset !important;
+    box-shadow: 0 0 0 1000px #070707 inset !important;
     -webkit-text-fill-color: #EAEAEA !important;
     color: #EAEAEA !important;
     border-color: #d4af37 !important;
@@ -890,8 +890,8 @@ input[type="password"]:-webkit-autofill {
 .home-next-tournament-card textarea:-webkit-autofill:focus,
 .home-next-tournament-card select:-webkit-autofill:focus,
 .home-next-tournament-card input:-internal-autofill-selected {
-    -webkit-box-shadow: 0 0 0px 1000px #070707 inset !important;
-    box-shadow: 0 0 0px 1000px #070707 inset !important;
+    -webkit-box-shadow: 0 0 0 1000px #070707 inset !important;
+    box-shadow: 0 0 0 1000px #070707 inset !important;
     -webkit-text-fill-color: #EAEAEA !important;
     color: #EAEAEA !important;
     background-image: none !important;
