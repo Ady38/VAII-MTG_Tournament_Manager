@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // simple tab toggling for signups/pairings/standings
     const tabBtns = document.querySelectorAll('.tournament-tab-btn');
     const tabContents = {
         signups: document.getElementById('tab-signups'),

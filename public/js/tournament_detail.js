@@ -1,9 +1,6 @@
 (function(){
     'use strict';
 
-    // Expect a global config: window.TOURNAMENT_DETAIL_CONFIG
-    var cfg = window.TOURNAMENT_DETAIL_CONFIG || {};
-
     // Tab switching
     function initTabs(){
         document.querySelectorAll('.tournament-tab-btn').forEach(function(btn){
@@ -18,7 +15,7 @@
         });
     }
 
-    // Rebuild the standings table body from server-sent rankings and commanders
+    // Rebuild standings table from data
     function updateStandings(rankings, commanders) {
         try {
             var tbody = document.querySelector('#tab-standings .table-responsive table.tournament-table tbody');
@@ -67,7 +64,7 @@
         }
     }
 
-    // AJAX result save: send result via fetch and update UI
+    // Setup AJAX result forms to save results and update UI
     function initResultForms(){
         document.querySelectorAll('.result-form').forEach(function(form){
             var select = form.querySelector('.result-select');
@@ -100,7 +97,7 @@
                 })
                 .then(function(json){
                     if (json && json.success) {
-                        var lbl = document.querySelector('.result-label[data-match-id="' + matchId + '"]');
+                        let lbl = document.querySelector('.result-label[data-match-id="' + matchId + '"]');
                         if (lbl) {
                             if (json.result === 'unplayed') {
                                 lbl.textContent = 'Unplayed';
@@ -129,7 +126,7 @@
                         select.disabled = false;
                     } else {
                         var err = json && json.error ? json.error : 'Unknown error';
-                        var lbl = document.querySelector('.result-label[data-match-id="' + matchId + '"]');
+                        let lbl = document.querySelector('.result-label[data-match-id="' + matchId + '"]');
                         if (lbl) lbl.textContent = 'Error: ' + err;
                     }
                 })
@@ -157,4 +154,3 @@
     }
 
 })();
-

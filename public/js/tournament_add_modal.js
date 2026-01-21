@@ -1,10 +1,11 @@
+// require DOM ready and modal elements
 document.addEventListener('DOMContentLoaded', function () {
     const addModal = document.getElementById('addModal');
     const openAddModalBtn = document.getElementById('openAddModal');
     const closeAddModalBtn = document.getElementById('closeAddModal');
     const cancelAddBtn = document.getElementById('cancelAdd');
-    const addForm = document.getElementById('addTournamentForm');
 
+    // attach open/close handlers
     if (addModal && openAddModalBtn && closeAddModalBtn && cancelAddBtn) {
         openAddModalBtn.addEventListener('click', function () {
             addModal.style.display = 'flex';
@@ -22,12 +23,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Ak je na stránke JS premenná window.keepAddModalOpenAfterSubmit, nechaj modal otvorený
+    // keep modal open if server requested via global flag
     if (window.keepAddModalOpenAfterSubmit && addModal) {
         addModal.style.display = 'flex';
     }
 
-    // Ak je na stránke JS premenná window.addModalErrors, zobraz alert a otvor modal
+    // show validation errors and open modal when server passed errors
     if (window.addModalErrors && Array.isArray(window.addModalErrors) && addModal) {
         alert(window.addModalErrors.join('\n'));
         addModal.style.display = 'flex';

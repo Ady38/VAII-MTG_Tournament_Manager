@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // --- Sorting logic ---
+    // sorting logic for the tournaments table
     const table = document.getElementById('tournamentTable');
     if (table) {
         const headers = table.querySelectorAll('thead th[data-sort]');
@@ -42,4 +42,3 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-

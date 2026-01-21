@@ -13,17 +13,19 @@ class UserController extends BaseController
 {
     public function index(Request $request): Response
     {
-        // Default index for UserController - redirect to home
+        // default redirect to home
         return $this->redirect('?c=Home&a=index');
     }
 
     public function detail(Request $request): Response
     {
+        // get user id from request
         $id = $request->get('id');
         if (!$id) {
             return $this->redirect('?c=Home&a=index');
         }
 
+        // load user
         $user = User::getOne($id);
         if (!$user) {
             return $this->redirect('?c=Home&a=index');
@@ -45,29 +47,29 @@ class UserController extends BaseController
                     'rank_position' => $tp->rank_position ?? null,
                 ];
             }
-            // sort by start_date desc (nulls last)
+            // sort and limit results
             usort($recentTournaments, function ($a, $b) {
                 $da = $a['start_date'] ? strtotime($a['start_date']) : 0;
                 $db = $b['start_date'] ? strtotime($b['start_date']) : 0;
                 return $db <=> $da;
             });
-            // keep only latest 5
             $recentTournaments = array_slice($recentTournaments, 0, 5);
         } catch (\Exception $e) {
             $recentTournaments = [];
         }
 
-        // pass under a different name to avoid collision with framework AppUser ($user) in layout
+        // render profile view
         return $this->html(['profileUser' => $user, 'recentTournaments' => $recentTournaments]);
     }
 
     public function edit(Request $request): Response
     {
-        // Only logged in users can edit their profile
+        // require login
         if (!$this->user->isLoggedIn()) {
             return $this->redirect('?c=Auth&a=login');
         }
 
+        // load current user
         $identity = $this->user->getIdentity();
         $id = (int)$identity->user_id;
 
@@ -78,6 +80,7 @@ class UserController extends BaseController
 
         $errors = [];
         if ($request->isPost()) {
+            // validate input
             $username = trim((string)$request->post('username'));
             $email = trim((string)$request->post('email'));
             $password = $request->post('password');
@@ -108,6 +111,7 @@ class UserController extends BaseController
             }
 
             if (empty($errors)) {
+                // save changes
                 $user->username = $username;
                 $user->email = $email;
                 if (!empty($password)) {
@@ -123,6 +127,7 @@ class UserController extends BaseController
             }
         }
 
+        // render edit form
         return $this->html(['profileUser' => $user, 'errors' => $errors]);
     }
 }

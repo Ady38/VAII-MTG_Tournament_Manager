@@ -8,6 +8,7 @@
     var startBtn = null;
     var resetBtn = null;
 
+    // format seconds to HH:MM:SS or MM:SS
     function formatHMS(sec){
         var s = Math.max(0, Math.floor(sec));
         var hh = Math.floor(s/3600); var mm = Math.floor((s%3600)/60); var ss = s%60;
@@ -18,8 +19,10 @@
     var localCountdownId = null;
     var localRemaining = 0;
 
+    // clear local interval
     function clearLocalCountdown(){ if (localCountdownId !== null) { clearInterval(localCountdownId); localCountdownId = null; } localRemaining = 0; }
 
+    // start/update local countdown timer
     function startLocalCountdown(seconds){
         clearLocalCountdown();
         localRemaining = Math.max(0, Math.floor(seconds));
@@ -37,6 +40,7 @@
         return cfg.selectedRound || 0;
     }
 
+    // fetch timer status from server and sync local countdown
     function fetchStatus(){
         var round = getSelectedRound();
         var url = '?c=Tournament&a=timerStatus&tournament_id=' + encodeURIComponent(tournamentId) + '&round=' + encodeURIComponent(round);
@@ -53,6 +57,7 @@
             }).catch(function(err){ console.error('timer status fetch error', err); clearLocalCountdown(); if (timerDisplay) timerDisplay.textContent = 'Error'; });
     }
 
+    // request server to start timer
     function startTimerRequest(){
         var round = getSelectedRound();
         if (!round || round === '0') { alert('No round selected — cannot start timer.'); return; }
@@ -64,8 +69,10 @@
             .catch(function(err){ if (startBtn) startBtn.disabled = false; console.error(err); alert('Network error'); });
     }
 
+    // request server to reset timer
     function resetTimerRequest(){ if (!confirm('Reset the round timer?')) return; var fd = new FormData(); fd.append('tournament_id', tournamentId); if (resetBtn) resetBtn.disabled = true; fetch('?c=Tournament&a=resetTimer', { method:'POST', body: fd, credentials:'same-origin', headers: {'X-Requested-With':'XMLHttpRequest'} }) .then(function(r){ return r.json(); }) .then(function(json){ if (resetBtn) resetBtn.disabled = false; if (json && json.success) { clearLocalCountdown(); if (timerDisplay) timerDisplay.textContent = 'Not running'; } else { alert('Failed to reset timer: ' + (json && json.message ? json.message : 'unknown')); } }) .catch(function(err){ if (resetBtn) resetBtn.disabled = false; console.error(err); alert('Network error'); }); }
 
+    // attach handlers and start polling
     function init(){
         timerDisplay = document.getElementById('timer-display');
         mainRoundSelect = document.getElementById('round-select');
@@ -81,8 +88,4 @@
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
-
-    // Expose for debugging
-    window.TOURNAMENT_timer = { startLocalCountdown: startLocalCountdown, clearLocalCountdown: clearLocalCountdown };
 })();
-

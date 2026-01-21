@@ -15,53 +15,34 @@ class TournamentController extends BaseController
 {
     public function index(Request $request): Response
     {
-        // Read filter parameters from query string
+        // read filter params
         $name = trim((string)$request->get('name'));
         $location = trim((string)$request->get('location'));
         $status = trim((string)$request->get('status'));
         $date = trim((string)$request->get('date'));
 
-        // Get all tournaments first
+        // load all tournaments
         $tournaments = Tournament::getAll();
 
-        // Filter in PHP according to requested criteria
+        // filter tournaments in PHP
         $filtered = array_filter($tournaments, function (Tournament $tournament)
          use ($name, $location, $status, $date) {
-            // Filter by name (case-insensitive substring)
-            if ($name !== '' && stripos($tournament->name, $name) === false) {
-                return false;
-            }
+            if ($name !== '' && stripos($tournament->name, $name) === false) return false;
+            if ($location !== '' && stripos((string)$tournament->location, $location) === false) return false;
+            if ($status !== '' && $status !== 'all' && $tournament->status !== $status) return false;
 
-            // Filter by location (case-insensitive substring)
-            if ($location !== '' && stripos((string)$tournament->location, $location) === false) {
-                return false;
-            }
-
-            // Filter by status (exact match)
-            if ($status !== '' && $status !== 'all' && $tournament->status !== $status) {
-                return false;
-            }
-
-            // Filter by date in range [start_date, end_date]
+            // date filter compares YYYY-MM-DD parts
             if ($date !== '') {
                 $d = substr($date, 0, 10);
                 $start = $tournament->start_date ? substr($tournament->start_date, 0, 10) : null;
                 $end = $tournament->end_date ? substr($tournament->end_date, 0, 10) : null;
-
                 if ($start && $end) {
-                    if ($d < $start || $d > $end) {
-                        return false;
-                    }
+                    if ($d < $start || $d > $end) return false;
                 } elseif ($start) {
-                    if ($d < $start) {
-                        return false;
-                    }
+                    if ($d < $start) return false;
                 } elseif ($end) {
-                    if ($d > $end) {
-                        return false;
-                    }
+                    if ($d > $end) return false;
                 } else {
-                    // No dates on tournament, can't match date filter
                     return false;
                 }
             }
@@ -71,12 +52,7 @@ class TournamentController extends BaseController
 
         return $this->html([
             'tournaments' => array_values($filtered),
-            'filters' => [
-                'name' => $name,
-                'location' => $location,
-                'status' => $status,
-                'date' => $date,
-            ],
+            'filters' => [ 'name' => $name, 'location' => $location, 'status' => $status, 'date' => $date ],
         ]);
     }
 
@@ -84,32 +60,25 @@ class TournamentController extends BaseController
     {
         $errors = [];
         if ($request->isPost()) {
+            // populate model from POST
             $tournament->name = trim($request->post('name'));
             $tournament->location = trim($request->post('location'));
             $tournament->start_date = $request->post('start_date');
             $tournament->end_date = $request->post('end_date');
             $tournament->status = trim($request->post('status'));
 
-            // If this is a new tournament (no id yet), assign current user as organizer
+            // assign organizer for new tournament
             if (empty($tournament->tournament_id)) {
                 $identity = $this->user->getIdentity();
                 $tournament->organizer_id = $identity ? $identity->user_id : null;
             }
 
-            if (!$tournament->name) {
-                $errors[] = 'Name is required.';
-            }
-            if (!$tournament->start_date) {
-                $errors[] = 'Start date is required.';
-            }
-            if (!$tournament->end_date) {
-                $errors[] = 'End date is required.';
-            }
-            // Kontrola: End date musí byť rovnaký alebo neskorší ako start date
-            if ($tournament->start_date && $tournament->end_date) {
-                if ($tournament->end_date < $tournament->start_date) {
-                    $errors[] = 'End date must be the same as or later than start date.';
-                }
+            // validation
+            if (!$tournament->name) $errors[] = 'Name is required.';
+            if (!$tournament->start_date) $errors[] = 'Start date is required.';
+            if (!$tournament->end_date) $errors[] = 'End date is required.';
+            if ($tournament->start_date && $tournament->end_date && $tournament->end_date < $tournament->start_date) {
+                $errors[] = 'End date must be the same as or later than start date.';
             }
 
             if (empty($errors)) {
@@ -122,7 +91,7 @@ class TournamentController extends BaseController
 
     public function add(Request $request): Response
     {
-        // Only organizers (role_id == 2) and admins (role_id == 1) can create tournaments
+        // auth: organizers/admins only
         $identity = $this->user->getIdentity();
         if (!$identity || !in_array((int)$identity->role_id, [1, 2], true)) {
             $this->app->getSession()->set('flash_error', 'Only organizers may create tournaments.');
@@ -134,16 +103,12 @@ class TournamentController extends BaseController
         if (!empty($result['redirect'])) {
             return $this->redirect('?c=Tournament&a=index');
         }
-        // Ak sú chyby, zobraz ich cez alert v index.view.php cez session a presmeruj späť na index
+        // on errors save to session for display and redirect
         if (!empty($result['errors'])) {
             $_SESSION['add_errors'] = $result['errors'];
-            // Uloz POST data pre predvyplnenie
             $_SESSION['add_form_data'] = [
-                'name' => $request->post('name'),
-                'location' => $request->post('location'),
-                'start_date' => $request->post('start_date'),
-                'end_date' => $request->post('end_date'),
-                'status' => $request->post('status'),
+                'name' => $request->post('name'), 'location' => $request->post('location'),
+                'start_date' => $request->post('start_date'), 'end_date' => $request->post('end_date'), 'status' => $request->post('status'),
             ];
         }
         return $this->redirect('?c=Tournament&a=index');
@@ -151,19 +116,13 @@ class TournamentController extends BaseController
 
     public function edit(Request $request): Response
     {
-        // Pri ulozeni z modalu ide ID v POST, pri klasickom otvoreni edit stranky v GET
-        if ($request->isPost()) {
-            $id = $request->post('id');
-        } else {
-            $id = $request->get('id');
-        }
+        // accept id from POST (modal) or GET
+        if ($request->isPost()) { $id = $request->post('id'); } else { $id = $request->get('id'); }
 
         $tournament = Tournament::getOne($id);
-        if (!$tournament) {
-            return $this->redirect('?c=Tournament&a=index');
-        }
+        if (!$tournament) return $this->redirect('?c=Tournament&a=index');
 
-        // Authorization: only admins or the organizer can edit
+        // auth: only admins or organizer may edit
         $identity = $this->user->getIdentity();
         $isAdmin = $identity && isset($identity->role_id) && (int)$identity->role_id === 1;
         $isOrganizerOwner = $identity && isset($identity->user_id) && ((int)$identity->user_id === (int)$tournament->organizer_id);
@@ -181,10 +140,10 @@ class TournamentController extends BaseController
 
     public function delete(Request $request): Response
     {
+        // find tournament and check delete auth
         $id = $request->get('id');
         $tournament = Tournament::getOne($id);
         if ($tournament) {
-            // Authorization: only admins or the organizer can delete
             $identity = $this->user->getIdentity();
             $isAdmin = $identity && isset($identity->role_id) && (int)$identity->role_id === 1;
             $isOrganizerOwner = $identity && isset($identity->user_id) && ((int)$identity->user_id === (int)$tournament->organizer_id);
@@ -199,20 +158,17 @@ class TournamentController extends BaseController
 
     public function detail(Request $request): Response
     {
+        // load tournament
         $id = $request->get('id');
         $tournament = Tournament::getOne($id);
-        if (!$tournament) {
-            return $this->redirect('?c=Tournament&a=index');
-        }
+        if (!$tournament) return $this->redirect('?c=Tournament&a=index');
 
+        // check registration status and user decklist
         $identity = $this->user->getIdentity();
         $isRegistered = false;
         $userDecklist = null;
         if ($identity) {
-            $registrations = TournamentPlayer::getAll(
-                "tournament_id = ? AND user_id = ?",
-                [$tournament->tournament_id, $identity->user_id]
-            );
+            $registrations = TournamentPlayer::getAll("tournament_id = ? AND user_id = ?", [$tournament->tournament_id, $identity->user_id]);
             $isRegistered = !empty($registrations);
 
             // load current user's decklist for this tournament (latest)
@@ -222,18 +178,17 @@ class TournamentController extends BaseController
 
         $isLogged = $this->user->isLoggedIn();
 
-        // Rankings: load players for this tournament ordered by points / rank_position
+        // load rankings
         $rankings = TournamentPlayer::getRankingsForTournament((int)$tournament->tournament_id);
 
-        // Load commanders from decklists uploaded for this tournament
+        // load commanders from decklists
         $commanders = [];
         try {
             $decklists = Decklist::getAll('tournament_id = ?', [$tournament->tournament_id], 'uploaded_at DESC');
-            // We want the latest decklist per user; decklists ordered by uploaded_at DESC so first occurrence wins
             foreach ($decklists as $dl) {
                 $uid = $dl->user_id ?? null;
                 if ($uid === null) continue;
-                if (isset($commanders[$uid])) continue; // already have latest
+                if (isset($commanders[$uid])) continue;
                 $fileRel = $dl->file_path ?? '';
                 if (!$fileRel) { $commanders[$uid] = ''; continue; }
                 $fullPath = realpath(__DIR__ . '/../../public/' . $fileRel) ?: (__DIR__ . '/../../public/' . $fileRel);
@@ -244,7 +199,6 @@ class TournamentController extends BaseController
                 foreach ($lines as $line) {
                     if (preg_match('/^\s*SB:\s*(.*)/i', $line, $m)) {
                         $found = trim($m[1]);
-                        // Remove leading quantity like "1 ", "2x ", "2 × " so only the card name remains
                         $found = preg_replace('/^\s*\d+\s*[x×]?\s*/i', '', $found);
                         break;
                     }
@@ -255,7 +209,7 @@ class TournamentController extends BaseController
             // ignore and leave commanders empty on error
         }
 
-        // Load existing pairings for this tournament (all rounds)
+        // load pairings
         $pairings = [];
         try {
             $pairings = TournamentPlayer::executeRawSQL('SELECT * FROM match_ WHERE tournament_id = ? ORDER BY round_number ASC, match_id ASC', [$tournament->tournament_id]);
@@ -263,83 +217,46 @@ class TournamentController extends BaseController
             // ignore
         }
 
-        // Recalculate rankings and tiebreakers from match results
+        // recalculate rankings and tiebreakers from match results
         try {
-            // Build initial username map from existing rankings (safe source available earlier)
+            // build initial username map
             $initialUsernames = [];
-            foreach ($rankings as $rk) {
-                if (isset($rk['user_id'])) $initialUsernames[(int)$rk['user_id']] = $rk['username'] ?? '';
-            }
-            // Initialize players map from tournament_player table (ensure all players are present)
+            foreach ($rankings as $rk) { if (isset($rk['user_id'])) $initialUsernames[(int)$rk['user_id']] = $rk['username'] ?? ''; }
+            // init players map
             $tpRows = TournamentPlayer::executeRawSQL('SELECT user_id, points FROM tournament_player WHERE tournament_id = ?', [$tournament->tournament_id]);
             $players = [];
             foreach ($tpRows as $tr) {
                 $uid = (int)$tr['user_id'];
-                $players[$uid] = [
-                    'user_id' => $uid,
-                    'username' => $initialUsernames[$uid] ?? '',
-                    'match_points' => 0.0,
-                    'matches_played' => 0,
-                    'games_won' => 0,
-                    'games_played' => 0,
-                    // rounds_won: counts wins as 1.0, draws as 0.5, losses as 0.0
-                    'rounds_won' => 0.0,
-                    'opponents' => [],
-                ];
+                $players[$uid] = [ 'user_id' => $uid, 'username' => $initialUsernames[$uid] ?? '', 'match_points' => 0.0, 'matches_played' => 0, 'games_won' => 0, 'games_played' => 0, 'rounds_won' => 0.0, 'opponents' => [] ];
             }
 
-            // Helper to ensure player exists in map
-            $ensurePlayer = function($uid) use (&$players) {
-                $uid = (int)$uid;
-                if (!isset($players[$uid])) {
-                    $players[$uid] = ['user_id'=>$uid,'username'=>'','match_points'=>0.0,'matches_played'=>0,'games_won'=>0,'games_played'=>0,'rounds_won'=>0.0,'opponents'=>[]];
-                }
-            };
+            // helper ensurePlayer
+            $ensurePlayer = function($uid) use (&$players) { $uid = (int)$uid; if (!isset($players[$uid])) { $players[$uid] = ['user_id'=>$uid,'username'=>'','match_points'=>0.0,'matches_played'=>0,'games_won'=>0,'games_played'=>0,'rounds_won'=>0.0,'opponents'=>[]]; } };
 
-            // Parse each match row and accumulate stats
+            // parse matches and compute stats
             foreach ($pairings as $m) {
                 $p1 = isset($m['player1_id']) ? (int)$m['player1_id'] : null;
                 $p2 = isset($m['player2_id']) ? (int)$m['player2_id'] : null;
                 $res = isset($m['result']) ? (string)$m['result'] : '';
-                // Normalize
                 $resNorm = trim(strtolower((string)$res));
 
                 if ($p1 === null || $p2 === null) continue;
                 $ensurePlayer($p1); $ensurePlayer($p2);
 
-                // BYE handling: player plays themself and gets a match point; do not count games or opponent
                 if ($p1 === $p2 || strtoupper($res) === 'BYE') {
-                    // award match points for BYE (win = 3 points) and count as a round win
-                    if (strtoupper($res) === 'BYE') {
-                        $players[$p1]['match_points'] += 3.0;
-                        $players[$p1]['matches_played'] += 1;
-                        $players[$p1]['rounds_won'] += 1.0;
-                    }
+                    if (strtoupper($res) === 'BYE') { $players[$p1]['match_points'] += 3.0; $players[$p1]['matches_played'] += 1; $players[$p1]['rounds_won'] += 1.0; }
                     continue;
                 }
 
-                // Skip unplayed results
-                if ($resNorm === '' || $resNorm === 'unplayed') {
-                    continue;
-                }
+                if ($resNorm === '' || $resNorm === 'unplayed') continue;
 
-                // Determine match points and games
                 if ($resNorm === 'draw') {
-                    // Treat draw as 1 / 1 (match points), games as 1-1
-                    // rounds_won gets 0.5 for both players
-                    $players[$p1]['match_points'] += 1.0;
-                    $players[$p2]['match_points'] += 1.0;
-                    $players[$p1]['matches_played'] += 1;
-                    $players[$p2]['matches_played'] += 1;
-                    $players[$p1]['games_won'] += 1;
-                    $players[$p2]['games_won'] += 1;
-                    $players[$p1]['games_played'] += 2;
-                    $players[$p2]['games_played'] += 2;
-                    $players[$p1]['rounds_won'] += 0.5;
-                    $players[$p2]['rounds_won'] += 0.5;
-                    // record opponents
-                    $players[$p1]['opponents'][] = $p2;
-                    $players[$p2]['opponents'][] = $p1;
+                    $players[$p1]['match_points'] += 1.0; $players[$p2]['match_points'] += 1.0;
+                    $players[$p1]['matches_played'] += 1; $players[$p2]['matches_played'] += 1;
+                    $players[$p1]['games_won'] += 1; $players[$p2]['games_won'] += 1;
+                    $players[$p1]['games_played'] += 2; $players[$p2]['games_played'] += 2;
+                    $players[$p1]['rounds_won'] += 0.5; $players[$p2]['rounds_won'] += 0.5;
+                    $players[$p1]['opponents'][] = $p2; $players[$p2]['opponents'][] = $p1;
                     continue;
                 }
 
@@ -519,11 +436,13 @@ class TournamentController extends BaseController
 
     public function generatePairings(Request $request): Response
     {
+        // require login
         $user = $this->user->getIdentity();
         if (!$user) {
             return $this->redirect('?c=Auth&a=login');
         }
 
+        // load tournament
         $tournamentId = (int)$request->post('tournament_id');
         $tournament = Tournament::getOne($tournamentId);
         if (!$tournament) {
@@ -536,7 +455,7 @@ class TournamentController extends BaseController
             return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings');
         }
 
-        // Load players (use rankings which contains user_id and points)
+        // load players (rankings)
         $players = TournamentPlayer::getRankingsForTournament($tournamentId);
         $count = count($players);
         if ($count < 2) {
@@ -544,7 +463,7 @@ class TournamentController extends BaseController
             return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings');
         }
 
-        // Load existing played map to detect rematches
+        // build rematch map from existing matches
         $playedRows = TournamentPlayer::executeRawSQL('SELECT player1_id, player2_id FROM match_ WHERE tournament_id = ?', [$tournamentId]);
         $played = [];
         foreach ($playedRows as $r) {
@@ -554,7 +473,7 @@ class TournamentController extends BaseController
             $played[$p2][$p1] = true;
         }
 
-        // NEW: disallow generating new pairings if there are unfinished matches (result NULL/empty/'unplayed')
+        // prevent new pairings if unfinished matches exist
         try {
             $unfinishedRows = TournamentPlayer::executeRawSQL("SELECT COUNT(*) AS cnt FROM match_ WHERE tournament_id = ? AND (result IS NULL OR TRIM(result) = '' OR LOWER(result) = 'unplayed')", [$tournamentId]);
             $unfinishedCount = isset($unfinishedRows[0]['cnt']) ? (int)$unfinishedRows[0]['cnt'] : 0;
@@ -566,7 +485,7 @@ class TournamentController extends BaseController
             // ignore DB check error and continue with pairing generation
         }
 
-        // Use SwissPairing service to compute pairs
+        // compute pairs using SwissPairing service
         try {
             $res = \App\Services\SwissPairing::generate($tournamentId, $players);
             $pairs = $res['pairs'] ?? [];
@@ -576,7 +495,7 @@ class TournamentController extends BaseController
             return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings');
         }
 
-        // If all generated pairs are duplicates (rematches), abort and show 'Maximum number of rounds reached'
+        // check if all pairs would be rematches
         $allDup = true;
         if (!empty($pairs)) {
             foreach ($pairs as $p) {
@@ -596,7 +515,7 @@ class TournamentController extends BaseController
             return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings');
         }
 
-        // Determine next round number (max existing round + 1). Fallback to 1 when no rounds exist or on error.
+        // compute next round number
         try {
             $maxRow = TournamentPlayer::executeRawSQL('SELECT MAX(round_number) AS m FROM match_ WHERE tournament_id = ?', [$tournamentId]);
             $maxRound = isset($maxRow[0]['m']) && $maxRow[0]['m'] !== null ? (int)$maxRow[0]['m'] : 0;
@@ -605,23 +524,19 @@ class TournamentController extends BaseController
             $nextRound = 1;
         }
 
-        // Insert generated pairs into match_ table
+        // save generated pairs and handle bye
         try {
             foreach ($pairs as $p) {
                 $p1 = (int)$p[0];
                 $p2 = (int)$p[1];
                 TournamentPlayer::executeRawSQL('INSERT INTO match_ (tournament_id, round_number, player1_id, player2_id) VALUES (:t, :r, :p1, :p2)', [':t' => $tournamentId, ':r' => $nextRound, ':p1' => $p1, ':p2' => $p2]);
             }
-            // Handle bye: create special match_ record and award automatic win (3 points)
             if ($bye !== null) {
                 $b = (int)$bye;
-                // Insert bye record (player plays themselves) with result 'BYE'
                 TournamentPlayer::executeRawSQL('INSERT INTO match_ (tournament_id, round_number, player1_id, player2_id, result) VALUES (:t, :r, :p1, :p2, :res)', [':t' => $tournamentId, ':r' => $nextRound, ':p1' => $b, ':p2' => $b, ':res' => 'BYE']);
-                // Award 3 points to bye player in tournament_player (win = 3)
                 TournamentPlayer::executeRawSQL('UPDATE tournament_player SET points = COALESCE(points,0) + 3 WHERE tournament_id = ? AND user_id = ?', [$tournamentId, $b]);
             }
             $_SESSION['pairing_success'] = 'Pairings generated for round ' . $nextRound;
-            // optionally mark tournament as ongoing
             if ($tournament->status === 'planned') {
                 $tournament->status = 'ongoing';
                 $tournament->save();
@@ -631,23 +546,26 @@ class TournamentController extends BaseController
             return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings');
         }
 
-        // Redirect to details with pairings tab open and selected to the new round
+        // redirect to detail view
         return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings&round=' . $nextRound);
     }
 
     public function join(Request $request): Response
     {
+        // require login
         $user = $this->user->getIdentity();
         if (!$user) {
             return $this->redirect('?c=Auth&a=login');
         }
 
+        // load tournament
         $tournamentId = (int)$request->post('tournament_id');
         $tournament = Tournament::getOne($tournamentId);
         if (!$tournament) {
             return $this->redirect('?c=Tournament&a=index');
         }
 
+        // register user if not already
         $existing = TournamentPlayer::getAll("tournament_id = ? AND user_id = ?", [$tournamentId, $user->user_id]);
         if (empty($existing)) {
             $tp = new TournamentPlayer();
@@ -656,15 +574,17 @@ class TournamentController extends BaseController
             $tp->save();
         }
 
-        // Handle optional decklist upload
+        // handle deck upload if provided
         $file = $request->file('decklist');
         if ($file !== null) {
-            // Server-side: disallow replacing existing decklist. Require explicit delete first.
+            // disallow replacing existing decklist
             $existingDecksCheck = Decklist::getAll('tournament_id = ? AND user_id = ?', [$tournamentId, $user->user_id]);
             if (!empty($existingDecksCheck)) {
                 $_SESSION['deck_upload_errors'] = ['You already have a decklist uploaded for this tournament. Delete it before uploading a new one.'];
                 return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId);
             }
+
+            // validate upload and contents
             $errors = [];
             if (!$file->isOk()) {
                 $errors[] = $file->getErrorMessage() ?? 'File upload failed.';
@@ -674,7 +594,6 @@ class TournamentController extends BaseController
                 if ($ext !== 'txt') {
                     $errors[] = 'Only .txt files are accepted for decklists.';
                 }
-                // Read temporary file and validate lines
                 $tmp = $file->getFileTempPath();
                 $contents = @file($tmp, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
                 if ($contents === false) {
@@ -683,7 +602,7 @@ class TournamentController extends BaseController
                     if (count($contents) > 100) {
                         $errors[] = 'Decklist may contain at most 100 non-empty lines.';
                     }
-                    // NEW: require that either the last or the second-last non-empty line starts with 'SB:'
+                    // require SB line near end
                     if (is_array($contents) && count($contents) > 0) {
                         $len = count($contents);
                         $hasSB = false;
@@ -703,13 +622,12 @@ class TournamentController extends BaseController
                     }
                 }
 
+                // prepare storage path and save file
                 if (empty($errors)) {
-                    // create a safe slug from tournament name and include tournament id to avoid collisions
+                    // create slug and uploads directory
                     $slug = preg_replace('/[^a-z0-9\-]/i', '-', trim((string)$tournament->name));
-                    // reduce consecutive dashes and trim
                     $slug = preg_replace('/-+/', '-', strtolower($slug));
                     $slug = trim($slug, '-');
-                    // fallback if empty
                     if ($slug === '') $slug = 'tournament-' . $tournamentId;
 
                     $uploadsDir = __DIR__ . '/../../public/uploads/' . $tournamentId . '_' . $slug;
@@ -720,13 +638,12 @@ class TournamentController extends BaseController
                     $finalName = sprintf('%s_%d_%d.txt', $safeName, $user->user_id, time());
                     $dest = $uploadsDir . DIRECTORY_SEPARATOR . $finalName;
                     if ($file->store($dest)) {
-                        // Save decklist record (only create new record — replacing is disallowed by UI/server-side)
+                        // save decklist record
                         $deckModelClass = '\\App\\Models\\Decklist';
                         if (class_exists($deckModelClass)) {
                             $deck = new $deckModelClass();
                             $deck->user_id = $user->user_id;
                             $deck->tournament_id = $tournamentId;
-                            // store relative web path: uploads/{tournamentId}_{slug}/{filename}
                             $deck->file_path = 'uploads/' . $tournamentId . '_' . $slug . '/' . $finalName;
                             $deck->uploaded_at = date('Y-m-d H:i:s');
                             $deck->save();
@@ -737,6 +654,7 @@ class TournamentController extends BaseController
                 }
             }
 
+            // set session messages for upload
             if (!empty($errors)) {
                 $_SESSION['deck_upload_errors'] = $errors;
             } else {
@@ -744,33 +662,38 @@ class TournamentController extends BaseController
             }
         }
 
+        // redirect back to tournament detail
         return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId);
     }
 
     public function deckDelete(Request $request): Response
     {
+        // require login
         $user = $this->user->getIdentity();
         if (!$user) {
             return $this->redirect('?c=Auth&a=login');
         }
+
+        // load tournament
         $tournamentId = (int)$request->post('tournament_id');
         $tournament = Tournament::getOne($tournamentId);
         if (!$tournament) {
             return $this->redirect('?c=Tournament&a=index');
         }
-        // Prevent deletion if tournament has started or finished
+
+        // prevent deletion after start
         if (in_array($tournament->status, ['ongoing', 'finished'])) {
             $_SESSION['deck_upload_errors'] = ['Decklist nie je možné odstrániť po začatí turnaja.'];
             return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId);
         }
-        // find decklist(s) for user & tournament
+
+        // find and delete deck files and records
         $deckrows = Decklist::getAll('tournament_id = ? AND user_id = ?', [$tournamentId, $user->user_id]);
         foreach ($deckrows as $d) {
             if (!empty($d->file_path)) {
                 $full = __DIR__ . '/../../public/' . $d->file_path;
                 if (is_file($full)) @unlink($full);
             }
-            // delete record
             try {
                 $d->delete();
             } catch (\Exception $e) {
@@ -783,35 +706,37 @@ class TournamentController extends BaseController
 
     public function leave(Request $request): Response
     {
+        // require login
         $user = $this->user->getIdentity();
         if (!$user) {
             return $this->redirect('?c=Auth&a=login');
         }
 
+        // load tournament
         $tournamentId = (int)$request->post('tournament_id');
         $tournament = Tournament::getOne($tournamentId);
         if (!$tournament) {
             return $this->redirect('?c=Tournament&a=index');
         }
 
-        // Prevent unregistering if tournament has started or finished
+        // prevent unregistering after start
         if (in_array($tournament->status, ['ongoing', 'finished'])) {
             $_SESSION['leave_errors'] = ['Nie je možné odhlásiť sa po začatí turnaja.'];
             return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId);
         }
 
-        // Remove tournament player record(s) for this user
+        // remove registration
         try {
             TournamentPlayer::deleteByTournamentAndUser($tournamentId, $user->user_id);
         } catch (\Exception $e) {
-            // fallback: try deleting any returned models
+            // fallback delete
             $rows = TournamentPlayer::getAll('tournament_id = ? AND user_id = ?', [$tournamentId, $user->user_id]);
             foreach ($rows as $r) {
                 try { $r->delete(); } catch (\Exception $e) { /* ignore */ }
             }
         }
 
-        // Also delete any decklists uploaded by this user for this tournament
+        // delete associated decklists
         $deckrows = Decklist::getAll('tournament_id = ? AND user_id = ?', [$tournamentId, $user->user_id]);
         foreach ($deckrows as $d) {
             if (!empty($d->file_path)) {
@@ -827,6 +752,7 @@ class TournamentController extends BaseController
 
     public function saveMatchResult(Request $request): Response
     {
+        // require login, support ajax
         $user = $this->user->getIdentity();
         $isAjax = (string)$request->post('ajax') === '1';
         if (!$user) {
@@ -838,12 +764,11 @@ class TournamentController extends BaseController
             return $this->redirect('?c=Auth&a=login');
         }
 
+        // load match
         $matchId = (int)$request->post('match_id');
         $tournamentId = (int)$request->post('tournament_id');
         $token = (string)$request->post('result'); // e.g. 'p1_2_0', 'p2_2_1', 'unplayed'
-        // $isAjax already set above
 
-        // Load match
         $rows = TournamentPlayer::executeRawSQL('SELECT * FROM match_ WHERE match_id = ? AND tournament_id = ?', [$matchId, $tournamentId]);
         if (empty($rows)) {
             if ($isAjax) {
@@ -858,6 +783,7 @@ class TournamentController extends BaseController
         $p1 = (int)$match['player1_id'];
         $p2 = (int)$match['player2_id'];
 
+        // load tournament and check organizer
         $tournament = Tournament::getOne($tournamentId);
         if (!$tournament) {
             if ($isAjax) {
@@ -869,7 +795,6 @@ class TournamentController extends BaseController
             return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings');
         }
 
-        // Only organizer may set results
         if ($user->user_id != $tournament->organizer_id) {
             if ($isAjax) {
                 header('Content-Type: application/json');
@@ -880,7 +805,7 @@ class TournamentController extends BaseController
             return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings');
         }
 
-        // Do not allow editing BYE matches
+        // prevent editing BYE matches
         $existingResult = isset($match['result']) ? (string)$match['result'] : '';
         if ($p1 === $p2 || strtoupper($existingResult) === 'BYE') {
             if ($isAjax) {
@@ -892,7 +817,7 @@ class TournamentController extends BaseController
             return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings');
         }
 
-        // Disallow editing this match if a later round has already been started (i.e. next round's pairings were generated)
+        // prevent editing if later rounds exist
         try {
             $laterRows = TournamentPlayer::executeRawSQL('SELECT COUNT(*) AS cnt FROM match_ WHERE tournament_id = ? AND round_number > ?', [$tournamentId, isset($match['round_number']) ? (int)$match['round_number'] : 0]);
             $laterCount = isset($laterRows[0]['cnt']) ? (int)$laterRows[0]['cnt'] : 0;
@@ -906,10 +831,10 @@ class TournamentController extends BaseController
                 return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings');
             }
         } catch (\Exception $e) {
-            // If DB check fails, be conservative and allow editing (or alternatively block). We'll allow editing to avoid accidental lockout.
+            // allow editing if DB check fails
         }
 
-        // Map token to winner/draw: null for unplayed
+        // parse result token
         $winner = null; // user_id or null for draw/unplayed
         $isDraw = false;
         $resLabel = '';
@@ -926,16 +851,15 @@ class TournamentController extends BaseController
                 return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings');
         }
 
-        // Points system: win = 3, draw = 1, loss = 0
+        // points values
         $winPoints = 3.0;
         $drawPoints = 1.0;
 
         try {
-            // Reverse previous result points if any
+            // reverse previous result points if any
             if (!empty($existingResult) && strtoupper($existingResult) !== 'UNPLAYED') {
                 $prevWinnerId = null;
                 $prevWasDraw = false;
-                // Determine prev winner from stored label or token
                 $er = strtoupper($existingResult);
                 if ($er === 'DRAW') {
                     $prevWasDraw = true;
@@ -945,34 +869,32 @@ class TournamentController extends BaseController
                     $prevWinnerId = $p2;
                 }
                 if ($prevWasDraw) {
-                    // subtract draw points from both
                     TournamentPlayer::executeRawSQL('UPDATE tournament_player SET points = GREATEST(COALESCE(points,0) - ?, 0) WHERE tournament_id = ? AND user_id IN (?, ?)', [$drawPoints, $tournamentId, $p1, $p2]);
                 } elseif ($prevWinnerId !== null) {
                     TournamentPlayer::executeRawSQL('UPDATE tournament_player SET points = GREATEST(COALESCE(points,0) - ?, 0) WHERE tournament_id = ? AND user_id = ?', [$winPoints, $tournamentId, $prevWinnerId]);
                 }
             }
 
-            // Apply new result: award points
+            // apply new result points
             if ($isDraw) {
                 TournamentPlayer::executeRawSQL('UPDATE tournament_player SET points = COALESCE(points,0) + ? WHERE tournament_id = ? AND user_id IN (?, ?)', [$drawPoints, $tournamentId, $p1, $p2]);
             } elseif ($winner !== null) {
                 TournamentPlayer::executeRawSQL('UPDATE tournament_player SET points = COALESCE(points,0) + ? WHERE tournament_id = ? AND user_id = ?', [$winPoints, $tournamentId, $winner]);
             }
 
-            // Save result token/label into match_. We'll store token for clarity
+            // save match result token
             $saveVal = $token;
             TournamentPlayer::executeRawSQL('UPDATE match_ SET result = ? WHERE match_id = ?', [$saveVal, $matchId]);
 
             $_SESSION['pairing_success'] = 'Match result saved.';
 
+            // if ajax, return updated points and rankings
             if ($isAjax) {
-                // return updated points for both players
                 $ptsRows = TournamentPlayer::executeRawSQL('SELECT user_id, points FROM tournament_player WHERE tournament_id = ? AND user_id IN (?, ?)', [$tournamentId, $p1, $p2]);
                 $pointsMap = [];
                 foreach ($ptsRows as $pr) {
                     $pointsMap[(int)$pr['user_id']] = (float)$pr['points'];
                 }
-                // NEW: compute rankings and include in response
                 $existingRank = TournamentPlayer::getRankingsForTournament($tournamentId);
                 $usernames = [];
                 foreach ($existingRank as $rk) {
@@ -989,17 +911,19 @@ class TournamentController extends BaseController
             return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings');
         }
 
-        // Redirect back to the same round and pairings tab
+        // redirect back to pairings tab and round
         $rnd = isset($match['round_number']) ? (int)$match['round_number'] : 1;
         return $this->redirect('?c=Tournament&a=detail&id=' . $tournamentId . '&tab=pairings&round=' . $rnd);
     }
 
     private function computeRankings(int $tournamentId, array $initialUsernames = []): array
     {
+        // load pairings and rebuild ranking stats from results
         $rankings = [];
         try {
             $pairings = TournamentPlayer::executeRawSQL('SELECT * FROM match_ WHERE tournament_id = ? ORDER BY round_number ASC, match_id ASC', [$tournamentId]);
 
+            // init players from tournament_player table
             $tpRows = TournamentPlayer::executeRawSQL('SELECT user_id, points FROM tournament_player WHERE tournament_id = ?', [$tournamentId]);
             $players = [];
             foreach ($tpRows as $tr) {
@@ -1016,6 +940,7 @@ class TournamentController extends BaseController
                 ];
             }
 
+            // helper to ensure a player exists in the map
             $ensurePlayer = function($uid) use (&$players) {
                 $uid = (int)$uid;
                 if (!isset($players[$uid])) {
@@ -1023,6 +948,7 @@ class TournamentController extends BaseController
                 }
             };
 
+            // process each match to compute match_points, games, opponents, etc.
             foreach ($pairings as $m) {
                 $p1 = isset($m['player1_id']) ? (int)$m['player1_id'] : null;
                 $p2 = isset($m['player2_id']) ? (int)$m['player2_id'] : null;
@@ -1111,30 +1037,26 @@ class TournamentController extends BaseController
                 }
             }
 
+            // finalize percentages
             foreach ($players as $uid => &$pd) {
                 $pd['gwp'] = ($pd['games_played'] > 0) ? ($pd['games_won'] / $pd['games_played']) : 0.0;
-                // MWP should be rounds won divided by rounds played (matches_played)
                 $pd['mwp'] = ($pd['matches_played'] > 0) ? ($pd['rounds_won'] / $pd['matches_played']) : 0.0;
             }
             unset($pd);
 
-            // Compute opponent-based tiebreakers (OGWP = avg of opponents' GWP)
+            // compute opponent-based tiebreakers
             foreach ($players as $uid => &$pd) {
                 $oppCount = count($pd['opponents']);
-                if ($oppCount === 0) {
-                    $pd['ogwp'] = 0.0;
-                    continue;
-                }
+                if ($oppCount === 0) { $pd['ogwp'] = 0.0; continue; }
                 $sumOGWP = 0.0;
                 foreach ($pd['opponents'] as $opp) {
-                    if (isset($players[$opp])) {
-                        $sumOGWP += $players[$opp]['gwp'];
-                    }
+                    if (isset($players[$opp])) $sumOGWP += $players[$opp]['gwp'];
                 }
                 $pd['ogwp'] = $sumOGWP / $oppCount;
             }
             unset($pd);
 
+            // sort and build rankings array
             $newRankings = array_values($players);
             usort($newRankings, function($a, $b) {
                 if ($a['match_points'] !== $b['match_points']) return ($a['match_points'] > $b['match_points']) ? -1 : 1;
@@ -1144,13 +1066,7 @@ class TournamentController extends BaseController
             });
 
             foreach ($newRankings as $r) {
-                $rankings[] = [
-                    'user_id' => $r['user_id'],
-                    'username' => $r['username'] ?? '',
-                    'points' => $r['match_points'],
-                    'gwp' => $r['gwp'],
-                    'ogwp' => $r['ogwp'],
-                ];
+                $rankings[] = ['user_id' => $r['user_id'], 'username' => $r['username'] ?? '', 'points' => $r['match_points'], 'gwp' => $r['gwp'], 'ogwp' => $r['ogwp']];
             }
         } catch (\Exception $e) {
             // on error return empty rankings
@@ -1160,6 +1076,7 @@ class TournamentController extends BaseController
 
     public function timerStatus(Request $request): Response
     {
+        // return current timer state for a tournament (JSON)
         $tournamentId = (int)$request->get('tournament_id');
         $round = $request->get('round');
 
@@ -1209,14 +1126,13 @@ class TournamentController extends BaseController
 
     public function startTimer(Request $request): Response
     {
-        // organizer/admin only
+        // start a timer for a round (organizer/admin only)
         $user = $this->user->getIdentity();
         if (!$user) {
             header('Content-Type: application/json'); echo json_encode(['success'=>false,'message'=>'Not authenticated']); exit;
         }
 
         $tournamentId = (int)$request->post('tournament_id');
-        // Round can be omitted by the client; we'll compute a sensible default server-side if needed
         $round = (int)$request->post('round');
 
         $tournament = Tournament::getOne($tournamentId);
@@ -1224,7 +1140,6 @@ class TournamentController extends BaseController
             header('Content-Type: application/json'); echo json_encode(['success'=>false,'message'=>'Tournament not found']); exit;
         }
 
-        // If round not provided or invalid, determine the most-recent round in the DB (fallback to 1)
         if ($round <= 0) {
             try {
                 $r = TournamentPlayer::executeRawSQL('SELECT MAX(round_number) AS maxr FROM match_ WHERE tournament_id = ?', [$tournamentId]);
@@ -1265,6 +1180,7 @@ class TournamentController extends BaseController
 
     public function resetTimer(Request $request): Response
     {
+        // reset timer (organizer/admin only)
         $user = $this->user->getIdentity();
         if (!$user) {
             header('Content-Type: application/json'); echo json_encode(['success'=>false,'message'=>'Not authenticated']); exit;

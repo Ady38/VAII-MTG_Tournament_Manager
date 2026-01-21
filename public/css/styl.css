@@ -5,12 +5,14 @@
     color: #FFD700; /* Gold text for menu */
 }
 
+/* Brand image */
 .navbar-brand img {
     width: 50px;
     border: none; /* Removed border */
     border-radius: 5px; /* Slight rounding for a polished look */
 }
 
+/* Navbar link styles */
 .navbar a {
     color: #FFD700; /* Gold text for menu links */
 }
@@ -26,12 +28,14 @@
     text-shadow: 1px 1px 2px #000000; /* Subtle shadow for contrast */
 }
 
+/* Page base styles */
 body {
     background: #0D0D0D; /* Dark background */
     color: #EAEAEA; /* Light text for readability */
     font-family: 'Garamond', serif; /* Fantasy-style font */
 }
 
+/* Link styles */
 a {
     color: #1E90FF; /* Blue for links */
     text-decoration: none;
@@ -42,6 +46,7 @@ a:hover {
     text-decoration: underline;
 }
 
+/* Primary button styles */
 button {
     background: #FFD700;
     color: #000;
@@ -51,19 +56,20 @@ button {
     cursor: pointer;
 }
 
-/* On hover, invert background and text colors */
+/* Button hover */
 button:hover {
     background: #000;
     color: #FFD700;
 }
 
+/* Home page primary button */
 .home-primary-btn {
     background-color: #d4af37;
     border-color: #d4af37;
     color: #000;
 }
 
-/* Invert colors on hover for home primary buttons (overrides Bootstrap link hover) */
+/* Invert on hover for home primary button */
 .home-primary-btn:hover,
 .home-primary-btn:focus,
 .home-primary-btn:active {
@@ -73,6 +79,7 @@ button:hover {
     text-decoration: none;
 }
 
+/* Footer */
 footer {
     background: #1E1E1E; /* Dark footer */
     color: #FFFFFF; /* White text */
@@ -81,21 +88,21 @@ footer {
     text-align: center;
 }
 
-/* Subtitle used on home page — ensure strong contrast on dark background */
+/* Subtitle */
 .subtitle {
     color: #F5F5F5 !important; /* near-white for maximum readability */
     opacity: 0.95;
     font-weight: 500;
 }
 
-/* Footer specific readable text for dark theme */
+/* Footer text */
 .footer-text {
     color: #F0F0F0 !important;
     font-size: 0.95rem;
     opacity: 0.95;
 }
 
-/* Home page specific styles extracted from inline styles */
+/* Home page layout helpers */
 .home-logo {
     max-width: 220px;
 }
@@ -104,6 +111,7 @@ footer {
     max-width: 500px;
 }
 
+/* Themed card for next tournament */
 .home-next-tournament-card {
     background: rgba(0, 0, 0, 0.7) !important;
     border: 2px solid #d4af37 !important;
@@ -111,7 +119,7 @@ footer {
     color: #EAEAEA !important;
 }
 
-/* Ensure the card element and its inner areas are dark (override Bootstrap whites) */
+/* Ensure dark inner areas for themed card */
 .home-next-tournament-card,
 .home-next-tournament-card.card,
 .home-next-tournament-card > .card-body,
@@ -120,6 +128,7 @@ footer {
     color: #EAEAEA !important;
 }
 
+/* Card header styling */
 .home-next-tournament-card > .card-header {
     background-color: rgba(255,255,255,0.03) !important; /* slight contrast */
     color: #d4af37 !important;
@@ -127,7 +136,7 @@ footer {
     border-bottom: 1px solid rgba(212,175,55,0.08) !important;
 }
 
-/* Also ensure when the themed class is on the container (not on .card) it applies */
+/* Ensure themed wrapper applies */
 .home-next-tournament-card {
     background-color: rgba(0,0,0,0.75) !important;
 }
@@ -139,7 +148,7 @@ footer {
     background-color: rgba(255,255,255,0.03) !important;
 }
 
-/* Ensure list group and list items inside themed cards are dark */
+/* List group inside themed cards */
 .home-next-tournament-card .list-group,
 .home-next-tournament-card .list-group-item {
     background: transparent !important;
@@ -147,14 +156,14 @@ footer {
     border: 1px solid rgba(212,175,55,0.06) !important;
 }
 
-/* Make sure plain .card-header and .card-body get overridden when used with themed wrapper */
+/* Card header/body overrides */
 .home-next-tournament-card .card-header,
 .home-next-tournament-card .card-body {
     background: transparent !important;
     color: #EAEAEA !important;
 }
 
-/* Profile avatar styling moved into CSS to keep views clean */
+/* Profile avatar */
 .profile-avatar {
     width: 80px;
     height: 80px;
@@ -167,6 +176,7 @@ footer {
     border: 1px solid #333;
 }
 
+/* Title styles */
 .home-next-tournament-title {
     color: #d4af37;
     font-weight: 600;
@@ -210,7 +220,6 @@ footer {
     color: #000;
 }
 
-/* Invert colors on hover for home primary buttons (overrides Bootstrap link hover) */
 .home-primary-btn:hover,
 .home-primary-btn:focus,
 .home-primary-btn:active {
@@ -238,12 +247,14 @@ footer {
     color: #FFD700;
 }
 
+/* Filters wrapper */
 .filters-wrapper {
     display: flex;
     justify-content: center;
     margin-bottom: 15px;
 }
 
+/* Filters form */
 .filters-form {
     margin: 0;
     font-family: 'Garamond', serif;
@@ -256,6 +267,7 @@ footer {
     width: 100%;
 }
 
+/* Filter row layout */
 .filters-row {
     display: flex;
     flex-wrap: wrap;
@@ -264,10 +276,7 @@ footer {
     justify-content: center;
 }
 
-.filters-label {
-    display: block;
-    margin-bottom: 3px;
-}
+.filters-label { display: block; margin-bottom: 3px; }
 
 .filters-input,
 .filters-select {
@@ -277,7 +286,7 @@ footer {
     color: #EAEAEA;
 }
 
-/* Ensure inputs keep dark theme when focused (override Bootstrap .form-control:focus) */
+/* Focus styles for inputs */
 .filters-input:focus,
 .home-next-tournament-card .filters-input:focus,
 .home-next-tournament-card .form-control:focus,
@@ -289,12 +298,7 @@ footer {
     outline: none !important;
 }
 
-.filters-actions {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    margin-top: 4px;
-}
+.filters-actions { display: flex; gap: 5px; align-items: center; margin-top: 4px; }
 
 .filters-button {
     padding: 6px 12px;
@@ -315,6 +319,7 @@ footer {
     border-radius: 4px;
 }
 
+/* Edit modal overlay and content */
 .edit-modal-overlay {
     display: none;
     position: fixed;
@@ -338,264 +343,29 @@ footer {
     position: relative;
 }
 
-.edit-modal-close {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: none;
-    border: none;
-    color: #FFD700;
-    font-size: 18px;
-    cursor: pointer;
-}
+.edit-modal-close { position: absolute; top: 8px; right: 8px; background: none; border: none; color: #FFD700; font-size: 18px; cursor: pointer; }
 
-.edit-modal-title {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #FFD700;
-    text-align: center;
-}
+.edit-modal-title { margin-top: 0; margin-bottom: 15px; color: #FFD700; text-align: center; }
 
-.edit-modal-field {
-    margin-bottom: 10px;
-}
+.edit-modal-field { margin-bottom: 10px; }
 
-.edit-modal-label {
-    display: block;
-    margin-bottom: 4px;
-}
+.edit-modal-label { display: block; margin-bottom: 4px; }
 
 .edit-modal-input,
-.edit-modal-select {
-    width: 100%;
-    padding: 6px;
-    border: 1px solid #D4AF37;
-    background: #000;
-    color: #EAEAEA;
-}
+.edit-modal-select { width: 100%; padding: 6px; border: 1px solid #D4AF37; background: #000; color: #EAEAEA; }
 
 .edit-modal-select,
-.edit-modal-input-date {
-    color-scheme: dark;
-}
+.edit-modal-input-date { color-scheme: dark; }
 
-.edit-modal-row {
-    margin-bottom: 10px;
-    display: flex;
-    gap: 8px;
-}
+.edit-modal-row { margin-bottom: 10px; display: flex; gap: 8px; }
 
-.edit-modal-row > div {
-    flex: 1;
-}
+.edit-modal-row > div { flex: 1; }
 
-.edit-modal-actions {
-    text-align: right;
-    margin-top: 15px;
-}
+.edit-modal-actions { text-align: right; margin-top: 15px; }
 
-.edit-modal-cancel {
-    padding: 6px 12px;
-    margin-right: 6px;
-    background: #333;
-    border: 1px solid #777;
-    color: #EAEAEA;
-    cursor: pointer;
-}
+.edit-modal-cancel { padding: 6px 12px; margin-right: 6px; background: #333; border: 1px solid #777; }
 
-.edit-modal-save {
-    padding: 6px 12px;
-    background: #FFD700;
-    border: 1px solid #D4AF37;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.tournament-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: 'Garamond', serif;
-    background-color: #0D0D0D;
-    color: #EAEAEA;
-    /* Ensure columns keep fixed widths */
-    table-layout: fixed;
-}
-
-/* Prevent cells from growing and enable ellipsis for overflow; add visible borders between rows/columns */
-.tournament-table th,
-.tournament-table td {
-    border: 1px solid #D4AF37;
-    padding: 8px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Suggested column width distribution for 4-column tables (Match / Player1 / Player2 / Result) */
-.tournament-table th:nth-child(1),
-.tournament-table td:nth-child(1) {
-    width: 8%;
-}
-.tournament-table th:nth-child(2),
-.tournament-table td:nth-child(2) {
-    width: 36%;
-}
-.tournament-table th:nth-child(3),
-.tournament-table td:nth-child(3) {
-    width: 36%;
-}
-.tournament-table th:nth-child(4),
-.tournament-table td:nth-child(4) {
-    width: 20%;
-}
-
-/* Stable column widths for standings table (7 columns: #, Player, Points, GWP, OGWP, OMWP, Commander) */
-.tournament-table thead tr th:nth-child(1),
-.tournament-table tbody tr td:nth-child(1) {
-    width: 6%;
-}
-.tournament-table thead tr th:nth-child(2),
-.tournament-table tbody tr td:nth-child(2) {
-    width: 28%;
-    text-align: left;
-}
-.tournament-table thead tr th:nth-child(3),
-.tournament-table tbody tr td:nth-child(3) {
-    width: 12%;
-    text-align: center;
-}
-.tournament-table thead tr th:nth-child(4),
-.tournament-table tbody tr td:nth-child(4) {
-    width: 12%;
-    text-align: center;
-}
-.tournament-table thead tr th:nth-child(5),
-.tournament-table tbody tr td:nth-child(5) {
-    width: 12%;
-    text-align: center;
-}
-.tournament-table thead tr th:nth-child(6),
-.tournament-table tbody tr td:nth-child(6) {
-    width: 12%;
-    text-align: center;
-}
-.tournament-table thead tr th:nth-child(7),
-.tournament-table tbody tr td:nth-child(7) {
-    width: 18%;
-    text-align: left;
-}
-
-/* For tables with different column counts the widths will be best-effort; adjust if needed per table */
-
-.tournament-table thead tr {
-    background-color: #3A3A3A;
-    color: #FFD700;
-    text-align: center;
-}
-
-.tournament-row {
-    text-align: center;
-    background-color: #1E1E1E;
-}
-
-.tournament-action-edit {
-    color: #1E90FF;
-    text-decoration: none;
-}
-
-.tournament-action-separator {
-    margin: 0 5px;
-    color: #FFD700;
-}
-
-.tournament-action-delete {
-    color: #FF0000;
-    text-decoration: none;
-}
-
-.tournament-tabs-frame {
-    background: rgba(0,0,0,0.7);
-    border: 1px solid #d4af37;
-    border-radius: 0 0 12px 12px;
-    padding: 24px;
-    margin-bottom: 32px;
-    color: #fff;
-}
-
-/* Keep inner tab contents simple; outer frame provides the main border */
-.tournament-tabs-frame .tournament-tab-content {
-    border: none;
-    background: transparent;
-    padding: 0;
-    margin: 0;
-}
-
-.tournament-create-btn {
-    font-size: 0.9em;
-    padding: 0.3em 0.8em;
-    margin-top: 0.5em;
-    margin-left: 0.5em;
-    margin-bottom: 0.5em;
-    border-radius: 6px;
-}
-
-/* Responsive table wrapper: allows horizontal scrolling on narrow screens */
-.table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    /* Add visible border for pairings and standings tables */
-    border: 1px solid #D4AF37;
-    border-radius: 8px;
-    padding: 8px;
-    background-clip: padding-box; /* ensure border doesn't overlap table */
-}
-
-/* Tables inside .table-responsive get a minimum width so they don't compress columns too much
-   and will allow horizontal scrolling when container is smaller than the table. */
-.table-responsive table {
-    min-width: 600px;
-    /* keep layout fixed for stable columns on larger screens */
-    table-layout: fixed;
-}
-
-/* Generic responsive table helper: apply to any table you want responsive without extra wrapper */
-table.responsive {
-    width: 100%;
-    max-width: 100%;
-    display: table;
-}
-
-/* Make every table responsive on narrow viewports: enable horizontal scrolling instead of forcing columns to resize.
-   This is a safe fallback that preserves desktop fixed-layout behavior while making tables usable on small screens. */
-@media (max-width: 900px) {
-    /* Turn tables into block-level scrollable elements so they don't overflow the layout */
-    table {
-        display: block;
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        /* prevent interior content from wrapping in a way that changes column sizing */
-        white-space: nowrap;
-    }
-
-    /* Keep cells readable by allowing wrapping inside cells if necessary on very small screens */
-    table th, table td {
-        white-space: nowrap;
-    }
-}
-
-@media (max-width: 480px) {
-    /* On very small devices, allow table cells to wrap to multiple lines for readability */
-    table, .table-responsive table, table.responsive {
-        table-layout: auto !important;
-    }
-    table th, table td, .table-responsive table th, .table-responsive table td {
-        white-space: normal !important;
-        word-break: break-word;
-    }
-}
+/* End migrated tournament.css */
 
 /* === Overrides: restore original style for tournaments index table === */
 #tournamentTable {
@@ -786,8 +556,8 @@ select:-webkit-autofill,
 input:-webkit-autofill:focus,
 textarea:-webkit-autofill:focus,
 select:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0px 1000px #070707 inset !important; /* fill with themed dark background */
-    box-shadow: 0 0 0px 1000px #070707 inset !important;
+    -webkit-box-shadow: 0 0 0 1000px #070707 inset !important; /* fill with themed dark background */
+    box-shadow: 0 0 0 1000px #070707 inset !important;
     -webkit-text-fill-color: #EAEAEA !important; /* keep light text */
     border-color: #d4af37 !important;
 }
@@ -841,8 +611,8 @@ input[type="password"]:-webkit-autofill {
 .home-next-tournament-card input:-webkit-autofill,
 .home-next-tournament-card textarea:-webkit-autofill,
 .home-next-tournament-card select:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0px 1000px #070707 inset !important;
-    box-shadow: 0 0 0px 1000px #070707 inset !important;
+    -webkit-box-shadow: 0 0 0 1000px #070707 inset !important;
+    box-shadow: 0 0 0 1000px #070707 inset !important;
     -webkit-text-fill-color: #EAEAEA !important;
     color: #EAEAEA !important;
     border-color: #d4af37 !important;
@@ -886,10 +656,9 @@ input[type="password"]:-webkit-autofill {
 .home-next-tournament-card input:-webkit-autofill:hover,
 .home-next-tournament-card input:-webkit-autofill:focus,
 .home-next-tournament-card textarea:-webkit-autofill:focus,
-.home-next-tournament-card select:-webkit-autofill:focus,
-.home-next-tournament-card input:-internal-autofill-selected {
-    -webkit-box-shadow: 0 0 0px 1000px #070707 inset !important;
-    box-shadow: 0 0 0px 1000px #070707 inset !important;
+.home-next-tournament-card select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #070707 inset !important;
+    box-shadow: 0 0 0 1000px #070707 inset !important;
     -webkit-text-fill-color: #EAEAEA !important;
     color: #EAEAEA !important;
     background-image: none !important;

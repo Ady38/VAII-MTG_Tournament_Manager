@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // --- Edit Tournament Modal logic ---
+    // modal element refs
     let modal = document.getElementById('editModal');
     let closeBtn = document.getElementById('closeEditModal');
     let cancelBtn = document.getElementById('cancelEdit');
 
+    // if elements missing, stop
     if (!modal || !closeBtn || !cancelBtn) {
         return;
     }
 
+    // inputs inside modal
     let idInput = document.getElementById('edit_id');
     let nameInput = document.getElementById('edit_name');
     let locationInput = document.getElementById('edit_location');
@@ -15,15 +17,11 @@ document.addEventListener('DOMContentLoaded', function () {
     let endDateInput = document.getElementById('edit_end_date');
     let statusSelect = document.getElementById('edit_status');
 
-    function openModal() {
-        modal.style.display = 'flex';
-    }
+    // open/close helpers
+    function openModal() { modal.style.display = 'flex'; }
+    function closeModal() { modal.style.display = 'none'; }
 
-    function closeModal() {
-        modal.style.display = 'none';
-    }
-
-    // open modal on Edit click and prefill form
+    // prefill and open modal when Edit clicked
     document.querySelectorAll('.edit-link').forEach(function (link) {
         link.addEventListener('click', function (e) {
             e.preventDefault();
@@ -46,17 +44,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // close modal on X or Cancel click
+    // close handlers
     closeBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        closeModal();
-    });
+    cancelBtn.addEventListener('click', function (e) { e.preventDefault(); closeModal(); });
 
-    // close when clicking outside modal content
-    modal.addEventListener('click', function (e) {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
+    // close by clicking outside content
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
 });

@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // simple in-memory cache and tooltip element
     const cache = new Map();
     let tooltip = null;
 
+    // create tooltip element
     function createTooltip() {
         tooltip = document.createElement('div');
         tooltip.className = 'scryfall-tooltip';
@@ -21,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.appendChild(tooltip);
     }
 
+    // position and show tooltip with provided content
     function showTooltipAt(x, y, contentNode) {
         if (!tooltip) createTooltip();
         // clear
@@ -41,12 +44,14 @@ document.addEventListener('DOMContentLoaded', function () {
         tooltip.style.top = top + 'px';
     }
 
+    // hide tooltip
     function hideTooltip() {
         if (tooltip) {
             tooltip.style.display = 'none';
         }
     }
 
+    // fetch card data from Scryfall (uses cache)
     async function fetchCard(name) {
         if (!name) return null;
         if (cache.has(name)) return cache.get(name);
@@ -73,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // helper node while loading
     function makeLoadingNode(text) {
         const wrap = document.createElement('div');
         wrap.style.minWidth = '160px';
@@ -84,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return wrap;
     }
 
+    // render card node
     function makeCardNode(card) {
         const wrap = document.createElement('div');
         if (card.image) {
@@ -110,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return wrap;
     }
 
-    // Attach listeners to the inner text element (.commander-link) so hover/click happen on the text only
+    // attach hover/click handlers to commander link elements
     document.querySelectorAll('.commander-link[data-card-name]').forEach(function (el) {
         let currentName = el.getAttribute('data-card-name') || '';
         if (!currentName) return;
@@ -169,15 +176,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Also attach click handler to plain links with class commander-name-link to open Scryfall (they are regular anchors already)
+    // also attach click handlers to commander-name-link anchors
     document.querySelectorAll('.commander-name-link').forEach(function (a) {
         a.addEventListener('click', function (ev) {
-            // let normal navigation to detail page happen if user holds ctrl/shift or uses right click; but since these links point to internal detail view, we intercept only simple clicks
             if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
             ev.preventDefault();
             const name = decodeURIComponent((new URL(a.href, window.location.origin)).searchParams.get('name') || '');
-            if (!name) return; // fallback to normal
-            // Attempt to open Scryfall directly for the card; if not found, open search
+            if (!name) return;
             (async function () {
                 const card = await fetchCard(name);
                 if (card && card.scryfall_uri) {
@@ -190,10 +195,3 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
-
-
-
-
-
-
-

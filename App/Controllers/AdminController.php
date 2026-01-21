@@ -17,11 +17,7 @@ use Framework\Http\Responses\Response;
  */
 class AdminController extends BaseController
 {
-    /**
-     * Authorizes actions in this controller.
-     *
-     * Only allow users with role_id == 1 (admin).
-     */
+    // only admin users allowed
     public function authorize(Request $request, string $action): bool
     {
         if (!$this->user->isLoggedIn()) return false;
@@ -29,57 +25,35 @@ class AdminController extends BaseController
         return isset($identity->role_id) && (int)$identity->role_id === 1;
     }
 
-    /**
-     * Displays the index page of the admin panel.
-     *
-     * This action requires authorization. It returns an HTML response for the admin dashboard or main page.
-     *
-     * @return Response Returns a response object containing the rendered HTML.
-     */
+    // admin dashboard
     public function index(Request $request): Response
     {
         return $this->html();
     }
 
-    // List users
+    // list users
     public function users(Request $request): Response
     {
         $users = [];
-        try {
-            $users = User::getAll(null, [], 'username ASC');
-        } catch (\Exception $e) {
-            $users = [];
-        }
+        try { $users = User::getAll(null, [], 'username ASC'); } catch (\Exception $e) { $users = []; }
 
-        // Map role ids to human-readable names (matches docker/sql/insert_dummies.sql)
-        $roles = [
-            1 => 'Admin',
-            2 => 'Organizer',
-            3 => 'Player',
-        ];
-
+        $roles = [1 => 'Admin', 2 => 'Organizer', 3 => 'Player'];
         return $this->html(['users' => $users, 'roles' => $roles]);
     }
 
-    // Show edit form
+    // show user edit form
     public function editUser(Request $request): Response
     {
-        $id = $request->get('id');
-        if (!$id) return $this->redirect($this->url('Admin.users'));
-
-        $user = User::getOne($id);
-        if (!$user) return $this->redirect($this->url('Admin.users'));
-
+        $id = $request->get('id'); if (!$id) return $this->redirect($this->url('Admin.users'));
+        $user = User::getOne($id); if (!$user) return $this->redirect($this->url('Admin.users'));
         return $this->html(['editUser' => $user]);
     }
 
-    // Update user (POST)
+    // update user
     public function updateUser(Request $request): Response
     {
         if (!$request->isPost()) return $this->redirect($this->url('Admin.users'));
-        $id = $request->post('user_id');
-        $user = User::getOne($id);
-        if (!$user) return $this->redirect($this->url('Admin.users'));
+        $id = $request->post('user_id'); $user = User::getOne($id); if (!$user) return $this->redirect($this->url('Admin.users'));
 
         $errors = [];
         $role_id = $request->post('role_id');
@@ -111,27 +85,20 @@ class AdminController extends BaseController
         return $this->html(['editUser' => $user, 'errors' => $errors]);
     }
 
-    // Delete user (kick)
+    // delete user (prevent self-deletion)
     public function deleteUser(Request $request): Response
     {
         if (!$request->isPost()) return $this->redirect($this->url('Admin.users'));
-        $id = $request->post('user_id');
-        $user = User::getOne($id);
-        if (!$user) return $this->redirect($this->url('Admin.users'));
+        $id = $request->post('user_id'); $user = User::getOne($id); if (!$user) return $this->redirect($this->url('Admin.users'));
 
-        // Prevent deleting yourself
         $identity = $this->user->getIdentity();
         if ($identity && $identity->user_id == $user->user_id) {
             $this->app->getSession()->set('flash_error', 'Cannot delete yourself.');
             return $this->redirect($this->url('Admin.users'));
         }
 
-        try {
-            $user->delete();
-            $this->app->getSession()->set('flash_success', 'User deleted.');
-        } catch (\Exception $e) {
-            $this->app->getSession()->set('flash_error', 'Failed to delete user.');
-        }
+        try { $user->delete(); $this->app->getSession()->set('flash_success', 'User deleted.'); }
+        catch (\Exception $e) { $this->app->getSession()->set('flash_error', 'Failed to delete user.'); }
 
         return $this->redirect($this->url('Admin.users'));
     }
