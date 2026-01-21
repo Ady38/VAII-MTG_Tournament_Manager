@@ -1,5 +1,7 @@
 <?php
 
+//Vytvorene s pomocou GitHub Copilot
+
 // Helper to format datetime for datetime-local input
 function format_datetime_local($dt)
 {

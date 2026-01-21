@@ -1,4 +1,7 @@
 <?php
+
+//Vytvorene s pomocou GitHub Copilot
+
 /** @var \Framework\Support\LinkGenerator $link */
 /** @var object $tournament */
 /** @var bool $isRegistered */

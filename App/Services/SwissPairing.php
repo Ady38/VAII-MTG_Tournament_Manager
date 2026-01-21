@@ -1,5 +1,7 @@
 <?php
 
+//Vytvorene s pomocou GitHub Copilot
+
 namespace App\Services;
 
 use App\Models\TournamentPlayer;

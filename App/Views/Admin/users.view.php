@@ -1,4 +1,7 @@
 <?php
+
+//Vytvorene s pomocou GitHub Copilot
+
 /** @var \App\Models\User[] $users */
 /** @var array $roles */
 /** @var \Framework\Support\LinkGenerator $link */

@@ -1,5 +1,7 @@
 <?php
 
+//Vytvorene s pomocou GitHub Copilot
+
 namespace App\Controllers;
 
 use App\Configuration;

@@ -1,4 +1,7 @@
 <?php
+
+//Vytvorene s pomocou GitHub Copilot
+
 /** @var array $tournaments */
 /** @var \Framework\Auth\AppUser $user */
 /** @var \Framework\Support\LinkGenerator $link */

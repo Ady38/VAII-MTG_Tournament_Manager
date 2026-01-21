@@ -1,5 +1,7 @@
 <?php
 
+//Vytvorene s pomocou GitHub Copilot
+
 /** @var string|null $message */
 /** @var \Framework\Support\LinkGenerator $link */
 /** @var \Framework\Support\View $view */
@@ -55,4 +57,3 @@ $view->setLayout('auth');
         </div>
     </div>
 </div>
-

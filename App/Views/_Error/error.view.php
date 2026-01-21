@@ -1,5 +1,7 @@
 <?php
 
+//Vytvorene s pomocou GitHub Copilot
+
 /** @var \Framework\Http\HttpException $exception */
 /** @var bool $showDetail */
 /** @var \Framework\Support\View $view */

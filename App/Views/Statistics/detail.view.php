@@ -1,4 +1,7 @@
 <?php
+
+//Vytvorene s pomocou GitHub Copilot
+
 /** @var \Framework\Support\LinkGenerator $link */
 /** @var string $commander */
 /** @var array $entries */
