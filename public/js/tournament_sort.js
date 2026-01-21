@@ -1,3 +1,5 @@
+/*Vytvorene s pomocou GitHub Copilot*/
+
 document.addEventListener('DOMContentLoaded', function () {
     // sorting logic for the tournaments table
     const table = document.getElementById('tournamentTable');

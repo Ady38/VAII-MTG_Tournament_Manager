@@ -1,3 +1,5 @@
+/*Vytvorene s pomocou GitHub Copilot*/
+
 (function(){
     'use strict';
     var cfg = window.TOURNAMENT_DETAIL_CONFIG || {};

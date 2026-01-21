@@ -1,3 +1,5 @@
+/*Vytvorene s pomocou GitHub Copilot*/
+
 document.addEventListener('DOMContentLoaded', function () {
     // simple in-memory cache and tooltip element
     const cache = new Map();

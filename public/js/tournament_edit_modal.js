@@ -1,3 +1,5 @@
+/*Vytvorene s pomocou GitHub Copilot*/
+
 document.addEventListener('DOMContentLoaded', function () {
     // modal element refs
     let modal = document.getElementById('editModal');

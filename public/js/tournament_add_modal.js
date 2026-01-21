@@ -1,3 +1,5 @@
+/*Vytvorene s pomocou GitHub Copilot*/
+
 // require DOM ready and modal elements
 document.addEventListener('DOMContentLoaded', function () {
     const addModal = document.getElementById('addModal');
