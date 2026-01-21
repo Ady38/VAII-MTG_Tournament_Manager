@@ -3,6 +3,20 @@
 (function(){
     'use strict';
     var cfg = window.TOURNAMENT_DETAIL_CONFIG || {};
+
+    // Fallback: if cfg has no tournamentId, try reading hidden div directly
+    if ((!cfg || !cfg.tournamentId) && typeof document !== 'undefined') {
+        try {
+            var el = document.getElementById('tournament-detail-config');
+            if (el) {
+                var parsed = JSON.parse(el.getAttribute('data-config') || '{}');
+                cfg = Object.assign({}, parsed, cfg);
+                window.TOURNAMENT_DETAIL_CONFIG = window.TOURNAMENT_DETAIL_CONFIG || {};
+                Object.assign(window.TOURNAMENT_DETAIL_CONFIG, cfg);
+            }
+        } catch (e) { /* ignore parse errors */ }
+    }
+
     var tournamentId = cfg.tournamentId || 0;
     var pollInterval = cfg.timerPollInterval || 5000;
     var timerDisplay = null;
